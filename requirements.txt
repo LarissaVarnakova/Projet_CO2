@@ -1,0 +1,10 @@
+# Environnement
+numpy==2.4.4
+pandas==3.0.2
+matplotlib==3.10.9
+seaborn==0.13.2
+plotly==6.7.0
+scikit-learn==1.8.0
+scipy==1.17.1
+ipykernel==7.2.0
+jupyter_client==8.8.0
