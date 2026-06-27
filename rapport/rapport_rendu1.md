@@ -271,7 +271,7 @@ Le prétraitement constitue une étape essentielle d'un projet de Machine Learni
 
 Les choix réalisés au cours de cette étape reposent sur les conclusions de l'analyse exploratoire et des analyses statistiques présentées dans les chapitres précédents. Chaque transformation a été réalisée dans le but d'améliorer la qualité des données tout en limitant les risques de biais ou de fuite d'information (*data leakage*).
 
-Le prétraitement a été réalisé selon une démarche progressive comprenant le nettoyage des données, le traitement des valeurs manquantes, la création et la sélection de variables, l'encodage des variables catégorielles ainsi que la préparation des jeux de données destinés à la phase de modélisation.
+Le prétraitement a été réalisé selon une démarche progressive comprenant le nettoyage des données, le traitement des valeurs manquantes, le **feature engineering**, la **sélection des variables**, l'encodage des variables catégorielles ainsi que la préparation des jeux de données destinés à la phase de modélisation.
 
 ## 6.1 Nettoyage des données
 
@@ -345,7 +345,7 @@ L'étude des valeurs aberrantes montre que les observations extrêmes correspond
 
 Après le traitement des valeurs manquantes, le feature engineering et l'analyse des valeurs aberrantes, une étape de sélection des variables a été réalisée afin d'identifier les variables les plus pertinentes pour la modélisation.
 
-Cette analyse s'appuie sur les résultats de l'analyse exploratoire, les corrélations observées entre les variables ainsi que sur des considérations métier. L'objectif est de limiter la redondance entre les variables explicatives, de réduire la complexité du modèle et de conserver uniquement les informations les plus pertinentes pour prédire les émissions de CO₂.
+Cette analyse s'appuie sur les résultats de l'analyse exploratoire, les corrélations observées entre les variables ainsi que sur les connaissances métier relatives aux caractéristiques techniques des véhicules. L'objectif est de limiter la redondance entre les variables explicatives, de réduire la complexité du modèle et de conserver uniquement les informations les plus pertinentes pour prédire les émissions de CO₂.
 
 Les variables numériques ont tout d'abord été étudiées. La variable `champ_v9`, correspondant à une référence réglementaire d'homologation, a été supprimée en raison de son faible intérêt pour la modélisation. La variable `puiss_admin_98` a également été écartée, sa très forte corrélation avec `puiss_max` (0,973) traduisant une redondance importante. De même, les variables `conso_urb` et `conso_exurb` ont été supprimées au profit de `conso_mixte`, plus représentative de la consommation globale du véhicule et fortement corrélée aux émissions de CO₂. En revanche, les variables `masse_ordma_min` et `masse_ordma_max` ont été conservées, leur corrélation (0,795) restant insuffisante pour justifier la suppression de l'une d'elles.
 
@@ -376,17 +376,19 @@ Le paramètre `drop="first"` a été utilisé afin de supprimer une modalité de
 
 Le paramètre `handle_unknown="ignore"` a également été retenu afin de garantir qu'une modalité absente du jeu d'entraînement mais présente dans le jeu de test puisse être traitée sans provoquer d'erreur lors de la transformation.
 
-L'encodage des variables catégorielles retenues a ainsi permis de générer un ensemble de variables indicatrices directement exploitables par les futurs modèles de Machine Learning
+L'encodage des variables catégorielles retenues a ainsi permis de générer un ensemble de variables indicatrices directement exploitables par les futurs modèles de Machine Learning.
 
 ### Synthèse
 
 L'encodage des variables catégorielles a permis de transformer les variables qualitatives retenues en variables numériques tout en respectant les bonnes pratiques du Machine Learning. Réalisé après la sélection des variables et ajusté uniquement sur le jeu d'entraînement, il garantit un prétraitement robuste, cohérent et directement exploitable par les futurs modèles de prédiction.
 
-## 6.6 Préparation des données pour la modélisation
+## 6.7 Préparation des données pour la modélisation
 
 La dernière étape du prétraitement a consisté à constituer les jeux de données définitifs qui seront utilisés lors de la phase de modélisation.
 
-Après l'encodage des variables catégorielles, les variables textuelles devenues inutiles ont été supprimées afin de ne conserver que des variables numériques directement exploitables par les algorithmes de Machine Learning.
+Conformément aux décisions prises lors de la sélection des variables, les variables numériques et textuelles jugées peu pertinentes ou redondantes ont été supprimées des jeux d'entraînement et de test avant l'encodage des variables catégorielles.
+
+Les variables catégorielles retenues ont ensuite été transformées à l'aide d'un encodage One-Hot afin d'obtenir des jeux de données entièrement numériques.
 
 Plusieurs contrôles ont ensuite été réalisés afin de vérifier la qualité des jeux de données obtenus. Les dimensions des jeux d'entraînement et de test ont été comparées afin de s'assurer de leur cohérence après l'ensemble des transformations. Les types des variables ont également été vérifiés pour confirmer que toutes les variables étaient désormais numériques.
 
@@ -396,16 +398,16 @@ Ces différentes vérifications garantissent que les jeux de données sont compl
 
 ### Synthèse
 
-À l'issue du prétraitement, les jeux d'entraînement et de test sont entièrement préparés pour la phase de modélisation. Toutes les variables sont numériques, aucune valeur manquante ne subsiste et les différentes transformations ont été appliquées de manière cohérente tout en respectant les bonnes pratiques du Machine Learning.
+Les jeux d'entraînement et de test obtenus à l'issue du prétraitement sont désormais entièrement préparés pour la phase de modélisation. Toutes les variables sont numériques, aucune valeur manquante ne subsiste et les différentes transformations ont été appliquées selon un pipeline cohérent respectant les bonnes pratiques du Machine Learning.
 
-## 6.7 Synthèse du prétraitement
+## 6.8 Synthèse du prétraitement
 
 Le prétraitement des données a permis de transformer le jeu de données brut en un ensemble de données fiable, cohérent et directement exploitable pour la phase de modélisation.
 
-Chaque étape a été guidée par les conclusions de l'analyse exploratoire et des analyses statistiques. Les variables inutiles ou incomplètes ont été supprimées, les valeurs manquantes ont été imputées selon une stratégie adaptée à chaque variable, les nouvelles variables créées ont été évaluées avant d'être conservées ou supprimées, les valeurs aberrantes ont été analysées puis maintenues lorsqu'elles correspondaient à des véhicules réels, et les variables catégorielles ont été transformées grâce à un encodage One-Hot.
+Chaque étape a été guidée par les conclusions de l'analyse exploratoire et des analyses statistiques. Les variables inutiles ou incomplètes ont été supprimées, les valeurs manquantes ont été imputées selon une stratégie adaptée, les nouvelles variables créées ont été évaluées avant d'être conservées ou supprimées, les valeurs aberrantes ont été analysées, puis une étape de sélection des variables a permis d'écarter les variables redondantes ou présentant un faible intérêt pour la modélisation.
 
-L'ensemble des traitements a été réalisé en respectant les bonnes pratiques du Machine Learning. Les différentes transformations ont été ajustées uniquement sur le jeu d'entraînement avant d'être appliquées au jeu de test, limitant ainsi tout risque de fuite d'information (*data leakage*).
+Les variables catégorielles retenues ont ensuite été transformées grâce à un encodage One-Hot, réalisé uniquement sur le jeu d'entraînement avant d'être appliqué au jeu de test, conformément aux bonnes pratiques visant à éviter toute fuite d'information (*data leakage*).
 
 Les jeux de données obtenus sont désormais complets, cohérents et entièrement numériques. Ils constituent une base solide pour la mise en œuvre et l'évaluation des futurs modèles de prédiction des émissions de CO₂.
 
-Ce prétraitement illustre l'importance d'une préparation rigoureuse des données avant toute phase de modélisation. Les choix effectués ne résultent pas de règles appliquées systématiquement, mais d'une analyse progressive du jeu de données et d'une évaluation de la pertinence de chaque transformation au regard des objectifs du projet.
+Ce prétraitement illustre l'importance d'une préparation rigoureuse des données avant toute phase de modélisation. Les choix réalisés ne résultent pas de traitements systématiques, mais d'une analyse progressive du jeu de données, d'une évaluation statistique des variables et d'une réflexion visant à construire un modèle à la fois performant, robuste et interprétable.
