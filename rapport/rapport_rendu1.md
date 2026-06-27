@@ -44,9 +44,10 @@
    - 6.2 Traitement des valeurs manquantes
    - 6.3 Feature Engineering
    - 6.4 Détection et traitement des valeurs aberrantes
-   - 6.5 Encodage des variables catégorielles
-   - 6.6 Préparation des données pour la modélisation
-   - 6.7 Synthèse du prétraitement
+   - 6.5 Sélection des variables
+   - 6.6 Encodage des variables catégorielles
+   - 6.7 Préparation des données pour la modélisation
+   - 6.8 Synthèse du prétraitement
 
 7. Conclusion
 
@@ -340,29 +341,46 @@ Dans ce contexte, le choix a été fait de conserver l'ensemble des observations
 
 L'étude des valeurs aberrantes montre que les observations extrêmes correspondent à des cas réels et non à des anomalies de données. Elles ont donc été conservées afin de préserver toute la diversité du jeu de données et de garantir une modélisation représentative des véhicules commercialisés en France en 2014.
 
-## 6.5 Encodage des variables catégorielles
+## 6.5 Sélection des variables
 
-Les algorithmes de Machine Learning utilisés dans la suite du projet nécessitent des variables numériques. Les variables catégorielles ont donc été transformées à l'aide d'un encodage de type **One-Hot Encoding**.
+Après le traitement des valeurs manquantes, le feature engineering et l'analyse des valeurs aberrantes, une étape de sélection des variables a été réalisée afin d'identifier les variables les plus pertinentes pour la modélisation.
 
-Les variables retenues pour cette étape sont :
+Cette analyse s'appuie sur les résultats de l'analyse exploratoire, les corrélations observées entre les variables ainsi que sur des considérations métier. L'objectif est de limiter la redondance entre les variables explicatives, de réduire la complexité du modèle et de conserver uniquement les informations les plus pertinentes pour prédire les émissions de CO₂.
+
+Les variables numériques ont tout d'abord été étudiées. La variable `champ_v9`, correspondant à une référence réglementaire d'homologation, a été supprimée en raison de son faible intérêt pour la modélisation. La variable `puiss_admin_98` a également été écartée, sa très forte corrélation avec `puiss_max` (0,973) traduisant une redondance importante. De même, les variables `conso_urb` et `conso_exurb` ont été supprimées au profit de `conso_mixte`, plus représentative de la consommation globale du véhicule et fortement corrélée aux émissions de CO₂. En revanche, les variables `masse_ordma_min` et `masse_ordma_max` ont été conservées, leur corrélation (0,795) restant insuffisante pour justifier la suppression de l'une d'elles.
+
+Les variables textuelles ont ensuite été analysées. Les variables `cnit`, `tvv`, `dscom`, `lib_mod` et `lib_mod_doss` n'ont pas été retenues en raison de leur forte cardinalité, de leur nature technique ou de leur faible valeur ajoutée pour la modélisation. À l'inverse, les variables `lib_mrq`, `cod_cbr`, `hybride`, `Carrosserie`, `gamme` et `typ_boite_nb_rapp` ont été conservées afin d'être encodées avant la phase de modélisation.
+
+### Synthèse
+
+La sélection des variables a permis de supprimer les variables jugées redondantes ou peu pertinentes tout en conservant les caractéristiques les plus informatives du jeu de données. Cette étape contribue à simplifier le modèle, à limiter la redondance entre les variables explicatives et à préparer un encodage plus pertinent des variables catégorielles.
+
+## 6.6 Encodage des variables catégorielles
+
+À l'issue de la sélection des variables, les variables catégorielles retenues ont été transformées afin d'être exploitables par les algorithmes de Machine Learning.
+
+Les variables conservées pour cette étape sont :
 
 - `cod_cbr` (type de carburant) ;
 - `hybride` ;
 - `Carrosserie` ;
 - `gamme` ;
-- `lib_mrq` (marque du véhicule).
+- `lib_mrq` (marque du véhicule) ;
+- `typ_boite_nb_rapp` (type de boîte de vitesses et nombre de rapports).
 
-L'encodage a été réalisé à l'aide de **OneHotEncoder** de la bibliothèque *scikit-learn*. Conformément aux bonnes pratiques en Machine Learning, l'encodeur a été ajusté exclusivement sur le jeu d'entraînement (`X_train`), puis appliqué au jeu de test (`X_test`). Cette démarche permet d'éviter toute fuite d'information (*data leakage*) entre les deux jeux de données.
+Les variables `cnit`, `tvv`, `dscom`, `lib_mod` et `lib_mod_doss` n'ont pas été encodées, car elles ont été écartées lors de l'étape de sélection des variables en raison de leur forte cardinalité, de leur nature technique ou de leur faible valeur ajoutée pour la modélisation.
 
-Le paramètre `drop="first"` a été utilisé afin de supprimer une modalité de référence pour chaque variable catégorielle. Ce choix permet d'éviter une colinéarité parfaite entre les variables créées, tout en conservant l'ensemble de l'information utile à la modélisation.
+L'encodage a été réalisé à l'aide de **OneHotEncoder** de la bibliothèque *scikit-learn*. Conformément aux bonnes pratiques du Machine Learning, l'encodeur a été ajusté uniquement sur le jeu d'entraînement (`X_train`), puis appliqué au jeu de test (`X_test`). Cette démarche permet d'éviter toute fuite d'information (*data leakage*).
 
-Le paramètre `handle_unknown="ignore"` a également été retenu afin de garantir qu'une éventuelle modalité absente du jeu d'entraînement mais présente dans le jeu de test puisse être traitée sans provoquer d'erreur lors de la transformation.
+Le paramètre `drop="first"` a été utilisé afin de supprimer une modalité de référence pour chaque variable catégorielle. Ce choix permet d'éviter une colinéarité parfaite entre les variables créées tout en conservant l'information utile à la modélisation.
 
-Au total, l'encodage des cinq variables catégorielles a généré **74 variables indicatrices**, directement exploitables par les futurs modèles de Machine Learning.
+Le paramètre `handle_unknown="ignore"` a également été retenu afin de garantir qu'une modalité absente du jeu d'entraînement mais présente dans le jeu de test puisse être traitée sans provoquer d'erreur lors de la transformation.
+
+L'encodage des variables catégorielles retenues a ainsi permis de générer un ensemble de variables indicatrices directement exploitables par les futurs modèles de Machine Learning
 
 ### Synthèse
 
-L'encodage des variables catégorielles a permis de transformer les principales variables qualitatives en variables numériques tout en respectant les bonnes pratiques du Machine Learning. L'utilisation de **OneHotEncoder**, ajusté uniquement sur le jeu d'entraînement, garantit un prétraitement robuste et compatible avec les algorithmes de modélisation.
+L'encodage des variables catégorielles a permis de transformer les variables qualitatives retenues en variables numériques tout en respectant les bonnes pratiques du Machine Learning. Réalisé après la sélection des variables et ajusté uniquement sur le jeu d'entraînement, il garantit un prétraitement robuste, cohérent et directement exploitable par les futurs modèles de prédiction.
 
 ## 6.6 Préparation des données pour la modélisation
 
