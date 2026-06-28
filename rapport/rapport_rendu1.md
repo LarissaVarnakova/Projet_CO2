@@ -143,7 +143,7 @@ Le jeu de données est composé de **55 044 observations** décrites par **30 va
 
 L'examen des types de variables met en évidence une majorité de variables catégorielles (chaînes de caractères) décrivant notamment les marques, les modèles, les carburants ou les transmissions, ainsi que plusieurs variables numériques correspondant aux caractéristiques techniques et environnementales des véhicules.
 
-L'analyse des valeurs manquantes révèle que la majorité des variables sont complètes. En revanche, certaines variables présentent un taux important de données manquantes. Les colonnes `Unnamed: 26` à `Unnamed: 29` sont entièrement vides (100 % de valeurs manquantes) et ne contiennent aucune information exploitable. La variable `date_maj` présente plus de **94 %** de valeurs manquantes, tandis que les variables `hc` et `hcnox` affichent respectivement environ **82 %** et **18 %** de données absentes.
+L'analyse des valeurs maquantes révèle que la majorité des variables sont complètes. En revanche, certaines variables présentent un taux important de valeurs manquantes. Les colonnes `Unnamed: 26` à `Unnamed: 29` sont entièrement vides (100 % de valeurs manquantes) et ne contiennent aucune information exploitable. La variable `date_maj` présente plus de **94 %** de valeurs manquantes, tandis que les variables `hc` et `hcnox` affichent respectivement environ **82 %** et **18 %** de données absentes.
 
 À l'inverse, les variables directement liées à la problématique du projet présentent un très faible taux de valeurs manquantes. Les variables `ptcl`, `nox` et `co_typ_1`, qui seront conservées pour la suite des analyses, comportent moins de **5 %** de valeurs manquantes. Elles pourront donc être traitées lors de la phase de prétraitement sans dégrader significativement la qualité du jeu de données.
 
@@ -157,7 +157,11 @@ L'analyse de la qualité des données met en évidence un jeu de données riche 
 
 Après avoir vérifié la qualité générale du jeu de données, une analyse descriptive a été réalisée afin de mieux comprendre les caractéristiques des véhicules étudiés.
 
-L'examen des statistiques descriptives met en évidence une forte hétérogénéité des véhicules commercialisés en France en 2014. Les variables quantitatives, telles que la puissance du moteur, la cylindrée, la masse, la consommation de carburant ou encore les émissions de CO₂, présentent une dispersion importante, traduisant la diversité des modèles présents dans le jeu de données.
+Comme l'illustre la **Figure 1**, l'examen des statistiques descriptives met en évidence une forte hétérogénéité des véhicules commercialisés en France en 2014. Les variables quantitatives, telles que la puissance du moteur, la cylindrée, la masse, la consommation de carburant ou encore les émissions de CO₂, présentent une dispersion importante, traduisant la diversité des modèles présents dans le jeu de données.
+
+![alt text](image.png)
+
+**Figure 1 – Figure 1 – Distribution des émissions de CO₂ des véhicules du jeu de données.**
 
 L'analyse de la variable cible montre que les émissions de CO₂ couvrent une plage de valeurs étendue, reflétant la coexistence de véhicules faiblement émetteurs et de véhicules plus énergivores. Cette variabilité constitue un point favorable pour la future phase de modélisation, puisqu'elle permettra aux modèles d'apprendre sur un ensemble représentatif de situations.
 
@@ -175,17 +179,25 @@ Les visualisations réalisées au cours de l'analyse exploratoire ont permis de 
 
 L'étude de la distribution des émissions de CO₂ montre une forte variabilité des niveaux d'émission entre les véhicules commercialisés en France en 2014. Cette dispersion confirme l'intérêt de rechercher les variables les plus explicatives afin d'améliorer les performances des futurs modèles prédictifs.
 
-Les analyses réalisées mettent en évidence une relation particulièrement marquée entre la consommation de carburant et les émissions de CO₂. Quel que soit le type de consommation étudié (urbaine, extra-urbaine ou mixte), une augmentation de la consommation s'accompagne d'une augmentation des émissions de CO₂. Cette relation constitue l'un des principaux résultats de l'analyse exploratoire.
+Comme l'illustre la **Figure 2**, la consommation de carburant présente une relation positive très marquée avec les émissions de CO₂. Une augmentation de la consommation s'accompagne systématiquement d'une augmentation des émissions. Cette tendance est particulièrement nette pour la consommation mixte, qui apparaît comme le meilleur indicateur des émissions de CO₂ parmi les différentes mesures de consommation. Ce résultat constitue l'un des principaux enseignements de l'analyse exploratoire et justifiera les choix réalisés lors de la phase de sélection des variables.
 
-Les graphiques montrent également que la puissance du moteur et la masse du véhicule influencent les émissions de CO₂. Les véhicules les plus lourds et les plus puissants présentent, dans l'ensemble, des émissions plus élevées, même si cette relation apparaît plus dispersée que celle observée avec la consommation.
+![alt text](image-1.png)
 
-L'étude des différents types de carburant met en évidence des différences significatives entre les motorisations. Les véhicules hybrides et électriques présentent globalement les niveaux d'émissions les plus faibles, tandis que les motorisations essence et diesel affichent des émissions plus élevées ainsi qu'une plus grande dispersion.
+**Figure 2 – Relation entre la consommation mixte de carburant et les émissions de CO₂.**
+
+Comme l'illustre la **Figure 4**, les émissions de CO₂ varient sensiblement selon le type de carburant. Les véhicules hybrides présentent globalement les niveaux d'émissions les plus faibles, tandis que les motorisations essence et diesel affichent des émissions plus élevées ainsi qu'une plus grande dispersion.
+
+![alt text](image-5.png)
+
+**Figure 4 – Distribution des émissions de CO₂ selon le type de carburant.**
+
+La **Figure 4** met également en évidence une dispersion plus importante des émissions pour les motorisations essence et diesel. Les motorisations hybrides apparaissent plus homogènes et présentent globalement des niveaux d'émissions plus faibles.
 
 Enfin, l'analyse des corrélations confirme que les variables liées à la consommation de carburant figurent parmi les meilleurs indicateurs des émissions de CO₂. À l'inverse, certaines variables techniques présentent une influence beaucoup plus limitée et seront réévaluées lors de la phase de sélection des variables.
 
 ### Synthèse
 
-Les analyses graphiques confirment que la consommation de carburant constitue le principal facteur associé aux émissions de CO₂. La puissance, la masse et le type de carburant contribuent également à expliquer une partie de la variabilité observée. Ces résultats orientent naturellement les choix réalisés lors de la phase de prétraitement et prépareront la sélection des variables utilisées pour la modélisation.
+Les analyses graphiques mettent en évidence une forte association entre les émissions de CO₂ et les caractéristiques techniques des véhicules. La consommation de carburant apparaît comme la variable la plus fortement associée aux émissions, tandis que le type de carburant contribue également à expliquer une partie de la variabilité observée. Ces résultats confortent les analyses statistiques présentées dans le chapitre suivant et guideront les choix réalisés lors du prétraitement des données.
 
 ## 4.4 Synthèse de l'analyse exploratoire
 
@@ -211,13 +223,17 @@ Les analyses présentées dans ce chapitre s'appuient successivement sur l'étud
 
 L'étude des corrélations a permis d'identifier les variables quantitatives les plus fortement associées aux émissions de CO₂.
 
-La matrice de corrélations met en évidence une très forte relation positive entre les émissions de CO₂ et les différentes mesures de consommation de carburant. La consommation mixte (`conso_mixte`) présente la corrélation la plus élevée avec la variable cible (≈ 0,97), suivie des consommations urbaine (`conso_urb`) et extra-urbaine (`conso_exurb`).
+Comme l'illustre la **Figure 3**, la matrice de corrélation met en évidence une forte relation positive entre les émissions de CO₂ et les différentes mesures de consommation de carburant. La consommation mixte (`conso_mixte`) présente la corrélation la plus élevée avec les émissions de CO₂ (≈ 0,97), suivie des consommations urbaine (`conso_urb`) et extra-urbaine (`conso_exurb`).
+
+![alt text](image-3.png)
+
+**Figure 3 – Matrice de corrélation des principales variables quantitatives.**
 
 Les variables relatives à la masse du véhicule présentent également des corrélations positives importantes avec les émissions de CO₂. À l'inverse, certaines variables techniques montrent des coefficients de corrélation plus faibles, traduisant une influence plus limitée sur les émissions.
 
 Les coefficients de Pearson et de Spearman ont permis de confirmer ces résultats. Malgré des approches différentes (relation linéaire pour Pearson et relation monotone pour Spearman), les deux méthodes conduisent aux mêmes conclusions générales concernant les variables les plus influentes.
 
-Ces résultats montrent que les variables liées à la consommation constituent les meilleurs indicateurs des émissions de CO₂ et seront naturellement privilégiées lors de la phase de modélisation.
+Ces résultats montrent que les variables liées à la consommation constituent les meilleurs indicateurs des émissions de CO₂. Ces observations ont directement guidé les choix réalisés lors de la phase de prétraitement, notamment la sélection des variables conservées pour la modélisation.
 
 ### Synthèse
 
@@ -243,11 +259,13 @@ Les analyses de variance montrent que le type de carburant, la carrosserie et la
 
 Un test de Student a été réalisé afin de comparer les émissions moyennes de CO₂ entre les véhicules hybrides et les véhicules non hybrides.
 
-L'objectif de cette analyse était de déterminer si la différence observée lors des visualisations était statistiquement significative ou si elle pouvait être attribuée au hasard.
+Comme l'illustre la **Figure 5**, les véhicules hybrides présentent des émissions de CO₂ globalement plus faibles que les véhicules non hybrides. Cette différence visuelle suggère que les deux groupes ne suivent pas la même distribution, ce qui justifie la réalisation d'un test de Student afin de déterminer si cet écart est statistiquement significatif.
 
-Les résultats du test mettent en évidence une différence statistiquement significative entre les deux groupes. Les véhicules hybrides présentent des émissions moyennes de CO₂ significativement plus faibles que les véhicules non hybrides.
+![alt text](image-6.png)
 
-Cette analyse confirme les observations réalisées lors de l'étude exploratoire et souligne l'impact du type de motorisation sur les émissions de CO₂.
+**Figure 5 – Distribution des émissions de CO₂ selon le type d'hybridation des véhicules.**
+
+Les résultats du test mettent en évidence une différence statistiquement significative entre les deux groupes. Les véhicules hybrides présentent des émissions moyennes de CO₂ significativement plus faibles que les véhicules non hybrides. Ce résultat confirme les observations réalisées lors de l'analyse exploratoire et souligne l'impact du type d'hybridation sur les émissions de CO₂.
 
 Au-delà de son intérêt statistique, ce résultat est cohérent avec les caractéristiques techniques des véhicules hybrides, conçus pour réduire la consommation de carburant et, par conséquent, les émissions de dioxyde de carbone.
 
@@ -411,3 +429,17 @@ Les variables catégorielles retenues ont ensuite été transformées grâce à 
 Les jeux de données obtenus sont désormais complets, cohérents et entièrement numériques. Ils constituent une base solide pour la mise en œuvre et l'évaluation des futurs modèles de prédiction des émissions de CO₂.
 
 Ce prétraitement illustre l'importance d'une préparation rigoureuse des données avant toute phase de modélisation. Les choix réalisés ne résultent pas de traitements systématiques, mais d'une analyse progressive du jeu de données, d'une évaluation statistique des variables et d'une réflexion visant à construire un modèle à la fois performant, robuste et interprétable.
+
+# 7. Conclusion
+
+Ce premier livrable a permis de poser les bases du projet de prédiction des émissions de CO₂ des véhicules commercialisés en France. L'ensemble des travaux réalisés a suivi une démarche méthodique, depuis la compréhension du jeu de données jusqu'à la préparation d'un jeu de données prêt à être exploité par des modèles de Machine Learning.
+
+L'analyse exploratoire a permis d'acquérir une connaissance approfondie des données, d'évaluer leur qualité et d'identifier les principales variables associées aux émissions de CO₂. Les analyses descriptives, les visualisations et les tests statistiques ont notamment mis en évidence le rôle prépondérant de la consommation de carburant, ainsi que l'influence de la puissance, de la masse, du type de carburant, de l'hybridation, de la carrosserie et de la gamme des véhicules.
+
+Ces résultats ont guidé les différentes étapes du prétraitement. Les choix réalisés en matière de traitement des valeurs manquantes, de feature engineering, de sélection des variables et d'encodage des variables catégorielles reposent sur les analyses menées en amont et respectent les bonnes pratiques du Machine Learning, notamment en limitant les risques de fuite d'information (*data leakage*).
+
+À l'issue de ce travail, les jeux de données d'entraînement et de test sont désormais complets, cohérents et entièrement exploitables pour la phase de modélisation. Les variables retenues ont été sélectionnées selon des critères statistiques et métier, afin de conserver les informations les plus pertinentes tout en limitant la redondance entre les variables explicatives.
+
+La prochaine étape du projet consistera à développer et comparer plusieurs modèles de Machine Learning capables de prédire les émissions de CO₂ des véhicules. Les performances de ces modèles seront évaluées à l'aide de métriques adaptées, puis analysées afin d'identifier la solution offrant le meilleur compromis entre précision, robustesse et interprétabilité.
+
+Ce premier livrable met en évidence l'importance d'une démarche rigoureuse d'exploration, d'analyse et de préparation des données avant toute phase de modélisation. Les choix réalisés tout au long de ce travail reposent sur des analyses objectives et des critères statistiques, permettant de constituer une base de données fiable et pertinente pour développer des modèles de prédiction robustes et interprétables.
