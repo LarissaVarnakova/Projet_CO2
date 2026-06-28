@@ -6,6 +6,10 @@
 
 **Projet :** Émissions de CO₂ des véhicules commercialisés en France
 
+**Groupe :**
+- Larissa Varnakova
+- Aziz Diallo
+
 **Mentor :** Nicolas Mormiche
 
 **Date :** Juin 2026
