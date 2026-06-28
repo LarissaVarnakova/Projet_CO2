@@ -443,3 +443,42 @@ Ces résultats ont guidé les différentes étapes du prétraitement. Les choix 
 La prochaine étape du projet consistera à développer et comparer plusieurs modèles de Machine Learning capables de prédire les émissions de CO₂ des véhicules. Les performances de ces modèles seront évaluées à l'aide de métriques adaptées, puis analysées afin d'identifier la solution offrant le meilleur compromis entre précision, robustesse et interprétabilité.
 
 Ce premier livrable met en évidence l'importance d'une démarche rigoureuse d'exploration, d'analyse et de préparation des données avant toute phase de modélisation. Les choix réalisés tout au long de ce travail reposent sur des analyses objectives et des critères statistiques, permettant de constituer une base de données fiable et pertinente pour développer des modèles de prédiction robustes et interprétables.
+
+# 8. Annexes
+
+## Annexe A – Description des principales variables
+
+| Variable        | Description                    |
+| --------------- | ------------------------------ |
+| co2             | Émissions de CO₂ (g/km)        |
+| conso_mixte     | Consommation mixte (l/100 km)  |
+| puiss_max       | Puissance maximale (kW)        |
+| masse_ordma_min | Masse minimale homologuée (kg) |
+| masse_ordma_max | Masse maximale homologuée (kg) |
+| cod_cbr         | Type de carburant              |
+| hybride         | Véhicule hybride (oui/non)     |
+| Carrosserie     | Type de carrosserie            |
+| gamme           | Gamme commerciale              |
+| lib_mrq         | Marque du véhicule             |
+
+
+## Annexe B – Résultats détaillés des tests statistiques
+
+Les résultats détaillés des analyses statistiques réalisées au cours du projet (corrélations de Pearson et de Spearman, analyses de variance ANOVA, tests de Student et tests du Khi-deux) sont disponibles dans les notebooks d'analyse exploratoire fournis avec le projet.
+
+Le présent rapport présente uniquement les principaux résultats nécessaires à leur interprétation. Les notebooks permettent, quant à eux, d'accéder à l'ensemble des calculs, tableaux de résultats et sorties détaillées.
+
+## Annexe C – Environnement technique
+
+Les analyses ont été réalisées sous Python à l'aide d'un notebook Jupyter exécuté dans Visual Studio Code.
+
+Les principales bibliothèques utilisées sont :
+
+- pandas
+- numpy
+- matplotlib
+- seaborn
+- scipy
+- scikit-learn
+
+La gestion des versions et le travail collaboratif ont été assurés à l'aide de Git et GitHub.
