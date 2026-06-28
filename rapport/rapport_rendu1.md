@@ -73,9 +73,19 @@ Ce premier rapport présente les différentes étapes réalisées avant la phase
 
 ## 2.1 Contexte
 
-La réduction des émissions de gaz à effet de serre constitue un enjeu environnemental majeur. En France, le secteur des transports représente une part importante des émissions de CO₂, les véhicules routiers contribuant significativement à cette empreinte carbone. Afin de limiter ces émissions, les pouvoirs publics mettent en œuvre des réglementations de plus en plus exigeantes, tandis que les constructeurs automobiles développent des motorisations plus performantes et moins polluantes.
+La réduction des émissions de gaz à effet de serre constitue un enjeu majeur pour le secteur des transports. En France, les véhicules routiers représentent une part importante des émissions de CO₂, ce qui conduit les pouvoirs publics et les constructeurs automobiles à renforcer les politiques visant à réduire leur impact environnemental.
 
-Dans ce contexte, l'exploitation des données issues des véhicules commercialisés permet de mieux comprendre les facteurs influençant les émissions de CO₂. L'analyse de ces données constitue un levier essentiel pour accompagner les décisions des constructeurs, des organismes de réglementation et des acteurs engagés dans la transition écologique.
+### Contexte économique et métier
+
+Les réglementations européennes imposent des objectifs de plus en plus exigeants en matière d'émissions de CO₂. Une meilleure compréhension des facteurs influençant ces émissions permet aux constructeurs de développer des véhicules plus performants sur le plan environnemental, d'anticiper les contraintes réglementaires, de limiter les pénalités financières et d'accompagner les consommateurs dans le choix de véhicules moins polluants.
+
+### Contexte scientifique
+
+Les émissions de CO₂ dépendent de nombreuses caractéristiques techniques des véhicules, telles que la consommation de carburant, la puissance, la masse, le type de carburant ou encore l'hybridation. L'analyse de ces variables permet d'identifier les facteurs les plus influents et de mieux comprendre les mécanismes expliquant les différences d'émissions observées entre les véhicules commercialisés en France.
+
+### Contexte technique
+
+Ce projet s'inscrit dans une démarche de Data Science visant à préparer un jeu de données destiné à la modélisation prédictive. Il mobilise les principales étapes d'un projet de Machine Learning : exploration des données, traitement des valeurs manquantes, feature engineering, sélection des variables, encodage des variables catégorielles et préparation des jeux d'entraînement et de test. L'objectif est de construire un jeu de données fiable et directement exploitable par les futurs modèles de prédiction.
 
 ## 2.2 Problématique
 
@@ -83,7 +93,7 @@ Les émissions de CO₂ d'un véhicule dépendent de nombreux paramètres techni
 
 La problématique retenue dans ce projet est donc la suivante :
 
-> **Quels sont les principaux facteurs influençant les émissions de CO₂ des véhicules commercialisés en France, et comment préparer efficacement ces données en vue de leur modélisation ?**
+**Quels sont les principaux facteurs influençant les émissions de CO₂ des véhicules commercialisés en France et comment exploiter ces informations pour construire un modèle de Machine Learning capable de prédire ces émissions ?**
 
 ## 2.3 Objectifs du projet
 
