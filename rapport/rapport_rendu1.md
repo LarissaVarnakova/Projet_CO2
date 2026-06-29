@@ -107,9 +107,9 @@ Pour atteindre cet objectif, plusieurs étapes ont été réalisées :
 - mettre en œuvre un prétraitement rigoureux des données (traitement des valeurs manquantes, gestion des variables, encodage et préparation des jeux d'entraînement et de test) ;
 - préparer un jeu de données directement exploitable par des modèles de Machine Learning.
 
-### Synthèse du chapitre
+### Synthèse
 
-Ce chapitre a permis de replacer le projet dans son contexte environnemental et d'en définir les principaux objectifs. La compréhension des facteurs influençant les émissions de CO₂ constitue le fil conducteur de cette étude. Les chapitres suivants présentent successivement le jeu de données utilisé, les analyses exploratoires réalisées ainsi que les différentes étapes de prétraitement mises en œuvre afin de préparer les données à la modélisation.
+Ce chapitre a permis de définir le cadre du projet ainsi que les objectifs poursuivis. L'étude vise à identifier les principaux facteurs influençant les émissions de CO₂ et à préparer un jeu de données de qualité, adapté à une future phase de modélisation prédictive.
 
 # 3. Présentation du jeu de données
 
@@ -141,7 +141,7 @@ Cette variable quantitative constitue donc la variable cible de l'ensemble des a
 
 ## 3.4 Synthèse
 
-Le jeu de données présente une richesse importante grâce à la diversité des informations techniques et environnementales disponibles pour chaque véhicule. Cette variété de variables permet d'étudier les principaux facteurs associés aux émissions de CO₂ tout en préparant un jeu de données adapté aux futures étapes de modélisation.
+Le jeu de données retenu offre une base d'analyse complète pour étudier les émissions de CO₂ des véhicules commercialisés en France. La diversité des variables disponibles permet d'aborder la problématique sous différents angles et constitue un support solide pour les analyses exploratoires ainsi que pour la préparation des futures étapes de modélisation.
 
 # 4. Analyse exploratoire des données
 
@@ -157,7 +157,7 @@ Le jeu de données est composé de **55 044 observations** décrites par **30 va
 
 L'examen des types de variables met en évidence une majorité de variables catégorielles (chaînes de caractères) décrivant notamment les marques, les modèles, les carburants ou les transmissions, ainsi que plusieurs variables numériques correspondant aux caractéristiques techniques et environnementales des véhicules.
 
-L'analyse des valeurs maquantes révèle que la majorité des variables sont complètes. En revanche, certaines variables présentent un taux important de valeurs manquantes. Les colonnes `Unnamed: 26` à `Unnamed: 29` sont entièrement vides (100 % de valeurs manquantes) et ne contiennent aucune information exploitable. La variable `date_maj` présente plus de **94 %** de valeurs manquantes, tandis que les variables `hc` et `hcnox` affichent respectivement environ **82 %** et **18 %** de données absentes.
+L'analyse des valeurs manquantes révèle que la majorité des variables sont complètes. En revanche, certaines variables présentent un taux important de valeurs manquantes. Les colonnes `Unnamed: 26` à `Unnamed: 29` sont entièrement vides (100 % de valeurs manquantes) et ne contiennent aucune information exploitable. La variable `date_maj` présente plus de **94 %** de valeurs manquantes, tandis que les variables `hc` et `hcnox` affichent respectivement environ **82 %** et **18 %** de données absentes.
 
 À l'inverse, les variables directement liées à la problématique du projet présentent un très faible taux de valeurs manquantes. Les variables `ptcl`, `nox` et `co_typ_1`, qui seront conservées pour la suite des analyses, comportent moins de **5 %** de valeurs manquantes. Elles pourront donc être traitées lors de la phase de prétraitement sans dégrader significativement la qualité du jeu de données.
 
@@ -165,7 +165,7 @@ Cette première analyse confirme que le jeu de données est globalement de bonne
 
 ### Synthèse
 
-L'analyse de la qualité des données met en évidence un jeu de données riche et globalement exploitable. Les principales difficultés concernent un nombre limité de variables fortement incomplètes, qui seront supprimées ou écartées de l'analyse. Les variables utiles à la modélisation présentent quant à elles très peu de valeurs manquantes, ce qui constitue un point favorable pour la suite du projet.
+L'évaluation de la qualité des données montre que le jeu de données est suffisamment fiable pour poursuivre les analyses. Les quelques anomalies identifiées concernent principalement des variables peu informatives ou fortement incomplètes, dont le traitement sera réalisé lors de la phase de prétraitement afin de disposer d'un jeu de données cohérent pour la modélisation.
 
 ## 4.2 Analyse descriptive
 
@@ -175,7 +175,7 @@ Comme l'illustre la **Figure 1**, l'examen des statistiques descriptives met en 
 
 ![alt text](image.png)
 
-**Figure 1 – Figure 1 – Distribution des émissions de CO₂ des véhicules du jeu de données.**
+**Figure 1 – Distribution des émissions de CO₂ des véhicules du jeu de données.**
 
 L'analyse de la variable cible montre que les émissions de CO₂ couvrent une plage de valeurs étendue, reflétant la coexistence de véhicules faiblement émetteurs et de véhicules plus énergivores. Cette variabilité constitue un point favorable pour la future phase de modélisation, puisqu'elle permettra aux modèles d'apprendre sur un ensemble représentatif de situations.
 
@@ -185,7 +185,7 @@ Enfin, l'analyse des variables catégorielles révèle une répartition déséqu
 
 ### Synthèse
 
-L'analyse descriptive met en évidence un jeu de données riche et varié, représentatif des véhicules commercialisés en France en 2014. La diversité des caractéristiques observées constitue un atout pour la modélisation, tout en justifiant la réalisation d'analyses statistiques et graphiques plus approfondies afin d'identifier les variables les plus influentes sur les émissions de CO₂.
+L'analyse descriptive confirme la grande diversité des véhicules présents dans le jeu de données, tant en termes de caractéristiques techniques que d'émissions de CO₂. Cette variabilité constitue un contexte favorable pour approfondir les analyses et identifier les variables les plus étroitement liées aux émissions de CO₂.
 
 ## 4.3 Analyse graphique des données
 
@@ -199,31 +199,25 @@ Comme l'illustre la **Figure 2**, la consommation de carburant présente une rel
 
 **Figure 2 – Relation entre la consommation mixte de carburant et les émissions de CO₂.**
 
-Comme l'illustre la **Figure 4**, les émissions de CO₂ varient sensiblement selon le type de carburant. Les véhicules hybrides présentent globalement les niveaux d'émissions les plus faibles, tandis que les motorisations essence et diesel affichent des émissions plus élevées ainsi qu'une plus grande dispersion.
+Comme l'illustre la **Figure 3**, les émissions de CO₂ varient sensiblement selon le type de carburant. Les véhicules hybrides présentent globalement les niveaux d'émissions les plus faibles, tandis que les motorisations essence et diesel affichent des émissions plus élevées ainsi qu'une plus grande dispersion.
 
 ![alt text](image-5.png)
 
-**Figure 4 – Distribution des émissions de CO₂ selon le type de carburant.**
+**Figure 3 – Distribution des émissions de CO₂ selon le type de carburant.**
 
-La **Figure 4** met également en évidence une dispersion plus importante des émissions pour les motorisations essence et diesel. Les motorisations hybrides apparaissent plus homogènes et présentent globalement des niveaux d'émissions plus faibles.
+La **Figure 3** met également en évidence une dispersion plus importante des émissions pour les motorisations essence et diesel. Les motorisations hybrides apparaissent plus homogènes et présentent globalement des niveaux d'émissions plus faibles.
 
 Enfin, l'analyse des corrélations confirme que les variables liées à la consommation de carburant figurent parmi les meilleurs indicateurs des émissions de CO₂. À l'inverse, certaines variables techniques présentent une influence beaucoup plus limitée et seront réévaluées lors de la phase de sélection des variables.
 
 ### Synthèse
 
-Les analyses graphiques mettent en évidence une forte association entre les émissions de CO₂ et les caractéristiques techniques des véhicules. La consommation de carburant apparaît comme la variable la plus fortement associée aux émissions, tandis que le type de carburant contribue également à expliquer une partie de la variabilité observée. Ces résultats confortent les analyses statistiques présentées dans le chapitre suivant et guideront les choix réalisés lors du prétraitement des données.
+Les analyses graphiques mettent en évidence des relations claires entre les caractéristiques des véhicules et leurs émissions de CO₂. La consommation mixte apparaît comme le facteur le plus étroitement associé aux émissions, tandis que le type de carburant contribue également à expliquer les différences observées entre les véhicules. Ces constats seront vérifiés et quantifiés à l'aide des analyses statistiques présentées dans le chapitre suivant.
 
 ## 4.4 Synthèse de l'analyse exploratoire
 
-L'analyse exploratoire a permis d'acquérir une compréhension approfondie du jeu de données et d'identifier les principaux facteurs susceptibles d'influencer les émissions de CO₂ des véhicules.
+L'analyse exploratoire a permis de mieux comprendre la structure du jeu de données, d'en évaluer la qualité et d'identifier les principales relations entre les variables. Elle a notamment mis en évidence le rôle prépondérant de la consommation de carburant dans les émissions de CO₂, ainsi que l'influence de plusieurs caractéristiques techniques des véhicules.
 
-Le jeu de données présente une qualité globale satisfaisante. Les quelques valeurs manquantes observées concernent un nombre limité de variables d'intérêt et pourront être traitées sans perte significative d'information lors de la phase de prétraitement.
-
-Les analyses descriptives et graphiques montrent que les émissions de CO₂ sont fortement liées à la consommation de carburant. La puissance du moteur, la masse du véhicule et le type de carburant apparaissent également comme des variables explicatives importantes, bien que leur influence soit moins marquée.
-
-Les analyses statistiques réalisées confirment les observations issues des visualisations et mettent en évidence des relations significatives entre plusieurs variables explicatives et la variable cible. Elles permettent ainsi de conforter les choix qui seront réalisés lors du prétraitement et de la future phase de modélisation.
-
-Cette analyse exploratoire constitue une étape essentielle du projet. Elle a permis de mettre en évidence les principales caractéristiques du jeu de données, d'identifier les variables les plus pertinentes et de définir une stratégie de prétraitement adaptée aux objectifs de modélisation des émissions de CO₂.
+Ces résultats fournissent une base solide pour engager la phase de prétraitement, au cours de laquelle les données seront nettoyées, préparées et sélectionnées afin de construire un jeu de données adapté à la future modélisation.
 
 # 5. Data visualisation et analyses statistiques
 
@@ -237,11 +231,11 @@ Les analyses présentées dans ce chapitre s'appuient successivement sur l'étud
 
 L'étude des corrélations a permis d'identifier les variables quantitatives les plus fortement associées aux émissions de CO₂.
 
-Comme l'illustre la **Figure 3**, la matrice de corrélation met en évidence une forte relation positive entre les émissions de CO₂ et les différentes mesures de consommation de carburant. La consommation mixte (`conso_mixte`) présente la corrélation la plus élevée avec les émissions de CO₂ (≈ 0,97), suivie des consommations urbaine (`conso_urb`) et extra-urbaine (`conso_exurb`).
+Comme l'illustre la **Figure 4**, la matrice de corrélation met en évidence une forte relation positive entre les émissions de CO₂ et les différentes mesures de consommation de carburant. La consommation mixte (`conso_mixte`) présente la corrélation la plus élevée avec les émissions de CO₂ (≈ 0,97), suivie des consommations urbaine (`conso_urb`) et extra-urbaine (`conso_exurb`).
 
 ![alt text](image-3.png)
 
-**Figure 3 – Matrice de corrélation des principales variables quantitatives.**
+**Figure 4 – Matrice de corrélation des principales variables quantitatives.**
 
 Les variables relatives à la masse du véhicule présentent également des corrélations positives importantes avec les émissions de CO₂. À l'inverse, certaines variables techniques montrent des coefficients de corrélation plus faibles, traduisant une influence plus limitée sur les émissions.
 
@@ -251,7 +245,7 @@ Ces résultats montrent que les variables liées à la consommation constituent 
 
 ### Synthèse
 
-Les analyses de corrélation mettent clairement en évidence le rôle prépondérant de la consommation de carburant dans l'explication des émissions de CO₂. La masse du véhicule apparaît également comme un facteur important, tandis que plusieurs autres variables présentent une contribution plus limitée.
+Les analyses de corrélation confirment que les variables liées à la consommation de carburant sont les plus fortement associées aux émissions de CO₂. La masse du véhicule présente également une relation importante, tandis que les autres variables quantitatives exercent une influence plus modérée. Ces résultats constituent un premier appui objectif pour la sélection des variables en vue de la modélisation.
 
 ## 5.2 Analyse de variance (ANOVA)
 
@@ -267,7 +261,7 @@ L'ensemble de ces résultats confirme que les variables catégorielles étudiée
 
 ### Synthèse
 
-Les analyses de variance montrent que le type de carburant, la carrosserie et la gamme du véhicule influencent significativement les émissions de CO₂. Ces résultats confirment les observations réalisées lors de l'analyse exploratoire et justifient la conservation de ces variables dans le processus de modélisation.
+Les analyses de variance montrent que le type de carburant, la carrosserie et la gamme sont associés à des différences significatives d'émissions de CO₂ entre les véhicules. Ces résultats confirment que ces variables catégorielles apportent une information pertinente pour expliquer la variabilité des émissions et devront être prises en compte lors de la phase de modélisation.
 
 ## 5.3 Tests de Student
 
@@ -285,17 +279,13 @@ Au-delà de son intérêt statistique, ce résultat est cohérent avec les carac
 
 ### Synthèse
 
-Le test de Student confirme que les véhicules hybrides émettent significativement moins de CO₂ que les véhicules non hybrides. Ce résultat renforce les conclusions issues des analyses graphiques et met en évidence l'influence de la motorisation sur les émissions des véhicules.
+Le test de Student confirme que les véhicules hybrides émettent significativement moins de CO₂ que les véhicules non hybrides. Ce résultat confirme les observations issues des analyses graphiques et met en évidence l'influence du type d'hybridation sur les émissions des véhicules.
 
 ## 5.4 Synthèse des analyses statistiques
 
-Les analyses statistiques ont permis de confirmer les principales tendances observées lors de l'analyse exploratoire.
+Les analyses statistiques ont permis de confirmer, de manière objective, les principales relations mises en évidence lors de l'analyse exploratoire. Elles montrent que les émissions de CO₂ dépendent à la fois de caractéristiques quantitatives, telles que la consommation de carburant et la masse du véhicule, et de caractéristiques catégorielles comme le type de carburant, la carrosserie, la gamme ou l'hybridation.
 
-L'étude des corrélations met en évidence le rôle prépondérant des variables liées à la consommation de carburant dans l'explication des émissions de CO₂. Les analyses de variance montrent que plusieurs variables catégorielles, telles que le type de carburant, la carrosserie et la gamme des véhicules, influencent significativement les niveaux d'émissions observés. Enfin, le test de Student confirme que les véhicules hybrides présentent des émissions de CO₂ significativement plus faibles que les véhicules non hybrides.
-
-Ces résultats permettent d'identifier les variables les plus pertinentes pour la suite du projet et confortent les choix réalisés lors du prétraitement des données. Ils constituent également une base solide pour la future phase de modélisation, en mettant en évidence les variables susceptibles de contribuer le plus efficacement à la prédiction des émissions de CO₂.
-
-Les enseignements tirés de cette analyse guideront les différentes étapes de préparation des données présentées dans le chapitre suivant, notamment le traitement des valeurs manquantes, la sélection des variables, l'encodage des variables catégorielles et la constitution des jeux de données destinés aux modèles de Machine Learning.
+Ces résultats renforcent la confiance accordée aux variables retenues pour la suite du projet et fournissent une base solide pour engager les différentes étapes du prétraitement avant la phase de modélisation.
 
 # 6. Prétraitement des données
 
@@ -319,7 +309,7 @@ Par ailleurs, le découpage entre les jeux d'entraînement et de test a été r�
 
 ### Synthèse
 
-Le nettoyage des données a permis de supprimer les variables inutiles et de préparer un jeu de données cohérent pour les étapes suivantes du prétraitement. La séparation précoce des jeux d'entraînement et de test garantit également une évaluation fiable des futurs modèles de Machine Learning.
+Le nettoyage des données a permis de conserver uniquement les informations pertinentes pour la modélisation et d'écarter les variables susceptibles d'apporter du bruit ou de biaiser les analyses. La séparation des jeux d'entraînement et de test dès le début du prétraitement garantit également une démarche conforme aux bonnes pratiques du Machine Learning.
 
 ## 6.2 Traitement des valeurs manquantes
 
@@ -341,7 +331,7 @@ La vérification réalisée après l'imputation montre qu'aucune valeur manquant
 
 ### Synthèse
 
-Le traitement des valeurs manquantes repose sur une stratégie adaptée à chaque variable. Le choix d'une imputation par la médiane globale ou par la médiane conditionnelle selon le type de carburant permet de préserver les caractéristiques des données tout en respectant les bonnes pratiques du Machine Learning. Cette étape aboutit à un jeu de données complet, prêt pour les traitements suivants.
+Le traitement des valeurs manquantes repose sur une stratégie adaptée aux caractéristiques de chaque variable. L'imputation par la médiane globale ou par la médiane conditionnelle selon le type de carburant permet de conserver l'ensemble des observations tout en limitant les risques de biais et de fuite d'information. Les données sont désormais complètes pour les variables concernées.
 
 ## 6.3 Feature Engineering
 
@@ -357,7 +347,7 @@ Ces essais illustrent une démarche de feature engineering consistant à créer 
 
 ### Synthèse
 
-Les variables dérivées créées au cours du feature engineering ont été évaluées à l'aide de leur corrélation avec les émissions de CO₂. Les deux ratios puissance/masse testés présentant un faible pouvoir explicatif, ils n'ont pas été conservés. Cette démarche illustre l'importance d'évaluer l'intérêt réel d'une nouvelle variable avant de l'intégrer à un modèle de Machine Learning.
+Les variables créées lors de cette phase de feature engineering ont été évaluées avant leur éventuelle intégration au jeu de données. Les deux ratios puissance/masse présentant un faible pouvoir explicatif vis-à-vis des émissions de CO₂, ils n'ont pas été conservés. Cette étape confirme que la création de nouvelles variables doit être guidée par leur apport réel à la modélisation.
 
 ## 6.4 Détection et traitement des valeurs aberrantes
 
@@ -371,7 +361,7 @@ Dans ce contexte, le choix a été fait de conserver l'ensemble des observations
 
 ### Synthèse
 
-L'étude des valeurs aberrantes montre que les observations extrêmes correspondent à des cas réels et non à des anomalies de données. Elles ont donc été conservées afin de préserver toute la diversité du jeu de données et de garantir une modélisation représentative des véhicules commercialisés en France en 2014.
+L'analyse des valeurs aberrantes montre que les observations extrêmes correspondent à des véhicules réels et non à des erreurs de mesure ou de saisie. Leur conservation permet de préserver la représentativité du jeu de données et de maintenir la variabilité nécessaire à une future phase de modélisation.
 
 ## 6.5 Sélection des variables
 
@@ -385,7 +375,7 @@ Les variables textuelles ont ensuite été analysées. Les variables `cnit`, `tv
 
 ### Synthèse
 
-La sélection des variables a permis de supprimer les variables jugées redondantes ou peu pertinentes tout en conservant les caractéristiques les plus informatives du jeu de données. Cette étape contribue à simplifier le modèle, à limiter la redondance entre les variables explicatives et à préparer un encodage plus pertinent des variables catégorielles.
+La sélection des variables a permis de supprimer les variables jugées redondantes ou peu pertinentes tout en conservant les caractéristiques les plus informatives du jeu de données. Cette étape contribue à simplifier le jeu de données, à limiter la redondance entre les variables explicatives et à préparer un encodage pertinent des variables catégorielles.
 
 ## 6.6 Encodage des variables catégorielles
 
@@ -412,7 +402,7 @@ L'encodage des variables catégorielles retenues a ainsi permis de générer un 
 
 ### Synthèse
 
-L'encodage des variables catégorielles a permis de transformer les variables qualitatives retenues en variables numériques tout en respectant les bonnes pratiques du Machine Learning. Réalisé après la sélection des variables et ajusté uniquement sur le jeu d'entraînement, il garantit un prétraitement robuste, cohérent et directement exploitable par les futurs modèles de prédiction.
+L'encodage des variables catégorielles a permis de transformer les variables qualitatives retenues en variables numériques tout en respectant les bonnes pratiques du Machine Learning. Réalisé après la sélection des variables et ajusté uniquement sur le jeu d'entraînement, il garantit une transformation cohérente des données avant leur utilisation par les futurs modèles de prédiction.
 
 ## 6.7 Préparation des données pour la modélisation
 
@@ -430,33 +420,23 @@ Ces différentes vérifications garantissent que les jeux de données sont compl
 
 ### Synthèse
 
-Les jeux d'entraînement et de test obtenus à l'issue du prétraitement sont désormais entièrement préparés pour la phase de modélisation. Toutes les variables sont numériques, aucune valeur manquante ne subsiste et les différentes transformations ont été appliquées selon un pipeline cohérent respectant les bonnes pratiques du Machine Learning.
+Les jeux d'entraînement et de test sont désormais prêts pour la phase de modélisation. Les différentes étapes de prétraitement ont permis d'obtenir des jeux de données complets, cohérents et entièrement numériques, répondant aux exigences nécessaires à l'entraînement et à l'évaluation des futurs modèles de Machine Learning.
 
 ## 6.8 Synthèse du prétraitement
 
-Le prétraitement des données a permis de transformer le jeu de données brut en un ensemble de données fiable, cohérent et directement exploitable pour la phase de modélisation.
+Le prétraitement a permis de transformer le jeu de données initial en un ensemble de données fiable, cohérent et adapté à une future phase de modélisation. Les différentes étapes mises en œuvre ont été guidées par les résultats de l'analyse exploratoire et des analyses statistiques, afin de conserver uniquement les informations les plus pertinentes.
 
-Chaque étape a été guidée par les conclusions de l'analyse exploratoire et des analyses statistiques. Les variables inutiles ou incomplètes ont été supprimées, les valeurs manquantes ont été imputées selon une stratégie adaptée, les nouvelles variables créées ont été évaluées avant d'être conservées ou supprimées, les valeurs aberrantes ont été analysées, puis une étape de sélection des variables a permis d'écarter les variables redondantes ou présentant un faible intérêt pour la modélisation.
-
-Les variables catégorielles retenues ont ensuite été transformées grâce à un encodage One-Hot, réalisé uniquement sur le jeu d'entraînement avant d'être appliqué au jeu de test, conformément aux bonnes pratiques visant à éviter toute fuite d'information (*data leakage*).
-
-Les jeux de données obtenus sont désormais complets, cohérents et entièrement numériques. Ils constituent une base solide pour la mise en œuvre et l'évaluation des futurs modèles de prédiction des émissions de CO₂.
-
-Ce prétraitement illustre l'importance d'une préparation rigoureuse des données avant toute phase de modélisation. Les choix réalisés ne résultent pas de traitements systématiques, mais d'une analyse progressive du jeu de données, d'une évaluation statistique des variables et d'une réflexion visant à construire un modèle à la fois performant, robuste et interprétable.
+Les jeux d'entraînement et de test obtenus sont désormais complets, entièrement numériques et prêts à être utilisés pour entraîner et évaluer les futurs modèles de prédiction des émissions de CO₂.
 
 # 7. Conclusion
 
-Ce premier livrable a permis de poser les bases du projet de prédiction des émissions de CO₂ des véhicules commercialisés en France. L'ensemble des travaux réalisés a suivi une démarche méthodique, depuis la compréhension du jeu de données jusqu'à la préparation d'un jeu de données prêt à être exploité par des modèles de Machine Learning.
+Ce premier livrable a permis de construire une base méthodologique solide en vue de la prédiction des émissions de CO₂ des véhicules commercialisés en France. Les différentes étapes réalisées, de l'exploration des données jusqu'au prétraitement, ont permis de mieux comprendre le jeu de données, de justifier les choix méthodologiques retenus et de préparer des données fiables pour la phase de modélisation.
 
-L'analyse exploratoire a permis d'acquérir une connaissance approfondie des données, d'évaluer leur qualité et d'identifier les principales variables associées aux émissions de CO₂. Les analyses descriptives, les visualisations et les tests statistiques ont notamment mis en évidence le rôle prépondérant de la consommation de carburant, ainsi que l'influence de la puissance, de la masse, du type de carburant, de l'hybridation, de la carrosserie et de la gamme des véhicules.
+Les analyses menées tout au long du projet ont permis d'identifier les variables les plus pertinentes pour expliquer les émissions de CO₂ et de mettre en place un prétraitement rigoureux, conforme aux bonnes pratiques du Machine Learning. Les jeux d'entraînement et de test obtenus sont désormais cohérents, complets et directement exploitables pour entraîner et évaluer les futurs modèles prédictifs.
 
-Ces résultats ont guidé les différentes étapes du prétraitement. Les choix réalisés en matière de traitement des valeurs manquantes, de feature engineering, de sélection des variables et d'encodage des variables catégorielles reposent sur les analyses menées en amont et respectent les bonnes pratiques du Machine Learning, notamment en limitant les risques de fuite d'information (*data leakage*).
+La prochaine étape consistera à développer, comparer et évaluer plusieurs modèles de régression afin d'identifier celui offrant les meilleures performances de prédiction. Au-delà de l'évaluation des performances, une attention particulière sera portée à l'interprétation des résultats afin de mieux comprendre l'influence des différentes caractéristiques des véhicules sur les émissions de CO₂.
 
-À l'issue de ce travail, les jeux de données d'entraînement et de test sont désormais complets, cohérents et entièrement exploitables pour la phase de modélisation. Les variables retenues ont été sélectionnées selon des critères statistiques et métier, afin de conserver les informations les plus pertinentes tout en limitant la redondance entre les variables explicatives.
-
-La prochaine étape du projet consistera à développer et comparer plusieurs modèles de Machine Learning capables de prédire les émissions de CO₂ des véhicules. Les performances de ces modèles seront évaluées à l'aide de métriques adaptées, puis analysées afin d'identifier la solution offrant le meilleur compromis entre précision, robustesse et interprétabilité.
-
-Ce premier livrable met en évidence l'importance d'une démarche rigoureuse d'exploration, d'analyse et de préparation des données avant toute phase de modélisation. Les choix réalisés tout au long de ce travail reposent sur des analyses objectives et des critères statistiques, permettant de constituer une base de données fiable et pertinente pour développer des modèles de prédiction robustes et interprétables.
+Ce premier livrable montre qu'une préparation rigoureuse des données constitue une étape essentielle de tout projet de Data Science. Les choix méthodologiques réalisés au cours de cette étude fournissent une base solide pour poursuivre le projet dans de bonnes conditions et construire des modèles fiables, robustes et interprétables.
 
 # 8. Annexes
 
@@ -480,7 +460,7 @@ Ce premier livrable met en évidence l'importance d'une démarche rigoureuse d'e
 
 Les résultats détaillés des analyses statistiques réalisées au cours du projet (corrélations de Pearson et de Spearman, analyses de variance ANOVA, tests de Student et tests du Khi-deux) sont disponibles dans les notebooks d'analyse exploratoire fournis avec le projet.
 
-Le présent rapport présente uniquement les principaux résultats nécessaires à leur interprétation. Les notebooks permettent, quant à eux, d'accéder à l'ensemble des calculs, tableaux de résultats et sorties détaillées.
+Le présent rapport présente uniquement les principaux résultats nécessaires à la compréhension des analyses. Les notebooks permettent, quant à eux, d'accéder à l'ensemble des calculs, tableaux de résultats et sorties détaillées.
 
 ## Annexe C – Environnement technique
 
