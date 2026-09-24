@@ -561,9 +561,11 @@ Ces résultats confirment la stabilité des performances observées sur le jeu d
 
 Un **Perceptron Multicouche (MLP)** a également été expérimenté afin d'évaluer une approche de Deep Learning sur les mêmes données.
 
-D'après les sorties d'exécution du notebook final, le MLP obtient **MAE = 5,48 g/km**, **RMSE = 5,74 g/km**, **R² = 0,9722** et **MAPE = 0,0278**. Ces performances restent très supérieures à celles du DummyRegressor, mais sont inférieures à celles des meilleurs modèles d'ensemble ainsi qu'à celles des modèles linéaires les plus performants.
+Le MLP obtient un **MAE de 1,1335 g/km**, un **RMSE de 1,6804 g/km**, un **R² de 0,9976** et une **MAPE de 0,0061**. Ces résultats montrent qu'un réseau de neurones simple est capable de modéliser efficacement les émissions de CO₂.
 
-Cette expérimentation montre qu'un réseau de neurones simple est capable de modéliser la relation entre les caractéristiques des véhicules et leurs émissions, mais que l'architecture testée n'apporte pas d'amélioration par rapport aux méthodes d'ensemble dans le cadre de cette étude.
+Le MLP présente notamment un **R² supérieur à ceux de la régression linéaire, de Ridge et de LightGBM**. Il reste toutefois en retrait par rapport aux modèles les plus performants de cette étude, notamment XGBoost et Random Forest.
+
+Cette expérimentation montre que les approches de Deep Learning peuvent être envisagées pour ce type de problématique, même si, dans le cadre de cette étude, les meilleurs résultats restent obtenus par les méthodes d'ensemble fondées sur les arbres.
 
 # 7. Comparaison globale des modèles
 
@@ -578,7 +580,7 @@ La comparaison finale permet de synthétiser les performances obtenues par les d
 | Ridge | 1,1243 | 1,8214 | 0,9972 | 0,0062 |
 | LightGBM | 0,4116 | 2,0065 | 0,9966 | 0,0024 |
 | Lasso | 3,9410 | 5,6517 | 0,9730 | 0,0206 |
-| MLP | 5,4814 | 5,7367 | 0,9722 | 0,0278 |
+| MLP   | 1,1335 | 1,6804 | 0,9976 | 0,0061
 | DummyRegressor | 22,5123 | 34,3963 | ≈ 0 | 0,1310 |
 
 L'ensemble des modèles supervisés surpasse très largement le **DummyRegressor**, ce qui confirme que les variables explicatives retenues contiennent une information importante pour prédire les émissions de CO₂.
@@ -617,9 +619,10 @@ La phase de modélisation a permis de comparer plusieurs familles de modèles, d
 
 Les modèles linéaires obtiennent déjà des performances très élevées, notamment la régression linéaire et Ridge. L'utilisation de modèles fondés sur les arbres améliore encore les résultats. Random Forest et XGBoost se distinguent particulièrement, tandis que LightGBM bénéficie d'une amélioration après optimisation de ses hyperparamètres.
 
-Les expérimentations complémentaires permettent de consolider ces résultats. La transformation logarithmique de la cible n'améliore pas les performances des modèles linéaires. La validation croisée confirme en revanche la stabilité des méthodes d'ensemble, en particulier de XGBoost. Le MLP testé reste performant par rapport à la baseline, mais n'atteint pas le niveau des meilleurs modèles de Machine Learning sur ce jeu de données.
+Les expérimentations complémentaires permettent de consolider ces résultats. La transformation logarithmique de la cible n'améliore pas les performances des modèles linéaires. La validation croisée confirme en revanche la stabilité des méthodes d'ensemble, en particulier de XGBoost. Le MLP obtient également de très bonnes performances, avec un R² de 0,9976 et un RMSE de 1,6804 g/km, même s'il reste en retrait par rapport à XGBoost et Random Forest.
 
-Au terme de cette comparaison, **XGBoost est retenu comme modèle de référence**. Il présente le meilleur R², le RMSE le plus faible et une excellente stabilité en validation croisée. L'analyse SHAP complète cette évaluation en permettant d'identifier les variables qui contribuent le plus à ses prédictions.
+Au terme de cette comparaison, **XGBoost est retenu comme modèle de référence**. Il présente le R² le plus élevé (0,9993), le RMSE le plus faible (0,8950 g/km) et une excellente stabilité en validation croisée. L'analyse SHAP complète cette évaluation en permettant d'identifier les variables qui contribuent le plus à ses prédictions.
+
 
 # 10. Difficultés rencontrées
 
@@ -631,7 +634,7 @@ L'**optimisation des hyperparamètres** a également montré qu'une recherche pl
 
 La **validation des résultats** a constitué un autre point important. Les scores très élevés obtenus par plusieurs modèles ont nécessité de compléter l'évaluation sur le jeu de test par l'analyse des scores d'entraînement, des courbes d'apprentissage et une validation croisée. Cette démarche permet de vérifier que les performances ne reposent pas uniquement sur une partition particulière des données.
 
-Enfin, certaines expérimentations n'ont pas apporté les gains attendus. La transformation logarithmique de la cible dégrade les performances des modèles linéaires, tandis que le MLP testé reste moins performant que les meilleures méthodes d'ensemble. Ces essais ont néanmoins permis de mieux délimiter les approches adaptées au jeu de données étudié.
+Enfin, certaines expérimentations n'ont pas apporté d'amélioration par rapport aux modèles les plus performants. La transformation logarithmique de la cible dégrade les performances des modèles linéaires. Le MLP obtient quant à lui de très bonnes performances, mais reste en retrait par rapport à XGBoost et Random Forest. Ces essais ont néanmoins permis de mieux délimiter les approches adaptées au jeu de données étudié.
 
 # 11. Conclusion générale du projet
 
