@@ -205,7 +205,7 @@ Après avoir vérifié la qualité générale du jeu de données, une analyse de
 
 Comme l'illustre la **Figure 1**, l'examen des statistiques descriptives met en évidence une forte hétérogénéité des véhicules commercialisés en France en 2014. Les variables quantitatives, telles que la puissance du moteur, la cylindrée, la masse, la consommation de carburant ou encore les émissions de CO₂, présentent une dispersion importante, traduisant la diversité des modèles présents dans le jeu de données.
 
-![alt text](figures/image.png)
+![](figures/image.png)
 
 **Figure 1 – Distribution des émissions de CO₂ des véhicules du jeu de données.**
 
@@ -227,13 +227,13 @@ L'étude de la distribution des émissions de CO₂ montre une forte variabilit�
 
 Comme l'illustre la **Figure 2**, la consommation de carburant présente une relation positive très marquée avec les émissions de CO₂. Une augmentation de la consommation s'accompagne systématiquement d'une augmentation des émissions. Cette tendance est particulièrement nette pour la consommation mixte, qui apparaît comme le meilleur indicateur des émissions de CO₂ parmi les différentes mesures de consommation. Ce résultat constitue l'un des principaux enseignements de l'analyse exploratoire et justifiera les choix réalisés lors de la phase de sélection des variables.
 
-![alt text](figures/image-1.png)
+![](figures/image-1.png)
 
 **Figure 2 – Relation entre la consommation mixte de carburant et les émissions de CO₂.**
 
 Comme l'illustre la **Figure 3**, les émissions de CO₂ varient sensiblement selon le type de carburant. Les véhicules hybrides présentent globalement les niveaux d'émissions les plus faibles, tandis que les motorisations essence et diesel affichent des émissions plus élevées ainsi qu'une plus grande dispersion.
 
-![alt text](figures/image-5.png)
+![](figures/image-5.png)
 
 **Figure 3 – Distribution des émissions de CO₂ selon le type de carburant.**
 
@@ -251,7 +251,8 @@ L'étude des corrélations a permis d'identifier les variables quantitatives les
 
 Comme l'illustre la **Figure 4**, la matrice de corrélation met en évidence une forte relation positive entre les émissions de CO₂ et les différentes mesures de consommation de carburant. La consommation mixte (`conso_mixte`) présente la corrélation la plus élevée avec les émissions de CO₂ (≈ 0,97), suivie des consommations urbaine (`conso_urb`) et extra-urbaine (`conso_exurb`).
 
-![alt text](figures/image-3.png)
+
+![](figures/image-3.png)
 
 **Figure 4 – Matrice de corrélation des principales variables quantitatives.**
 
@@ -289,7 +290,7 @@ Un test de Student a été réalisé afin de comparer les émissions moyennes de
 
 Comme l'illustre la **Figure 5**, les véhicules hybrides présentent des émissions de CO₂ globalement plus faibles que les véhicules non hybrides. Cette différence visuelle suggère que les deux groupes ne suivent pas la même distribution, ce qui justifie la réalisation d'un test de Student afin de déterminer si cet écart est statistiquement significatif.
 
-![alt text](figures/image-6.png)
+![](figures/image-6.png)
 
 **Figure 5 – Distribution des émissions de CO₂ selon le type d'hybridation des véhicules.**
 
