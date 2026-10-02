@@ -12,7 +12,7 @@
 
 **Mentor :** Nicolas Mormiche
 
-**Date :** Septembre 2026
+**Date :** Octobre 2026
 
 ---
 
