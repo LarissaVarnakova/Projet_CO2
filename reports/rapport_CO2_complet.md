@@ -576,11 +576,11 @@ La comparaison finale permet de synthétiser les performances obtenues par les d
 | XGBoost | 0,2975 | 0,8950 | 0,9993 | 0,0017 |
 | Random Forest | 0,0994 | 1,0044 | 0,9991 | 0,0007 |
 | Arbre de décision | 0,0881 | 1,4307 | 0,9983 | 0,0006 |
+| MLP | 1,1335 | 1,6804 | 0,9976 | 0,0061 |
 | Régression linéaire | 1,1046 | 1,7987 | 0,9973 | 0,0061 |
 | Ridge | 1,1243 | 1,8214 | 0,9972 | 0,0062 |
 | LightGBM | 0,4116 | 2,0065 | 0,9966 | 0,0024 |
 | Lasso | 3,9410 | 5,6517 | 0,9730 | 0,0206 |
-| MLP   | 1,1335 | 1,6804 | 0,9976 | 0,0061
 | DummyRegressor | 22,5123 | 34,3963 | ≈ 0 | 0,1310 |
 
 L'ensemble des modèles supervisés surpasse très largement le **DummyRegressor**, ce qui confirme que les variables explicatives retenues contiennent une information importante pour prédire les émissions de CO₂.
