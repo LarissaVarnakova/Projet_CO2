@@ -1,0 +1,26 @@
+% Mise en page du rapport PDF
+
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    top=2.5cm,
+    bottom=2.5cm,
+    left=2.5cm,
+    right=2.5cm
+}
+
+\usepackage{graphicx}
+
+% Évite qu'une image dépasse de la page
+\setkeys{Gin}{
+    width=\linewidth,
+    height=0.75\textheight,
+    keepaspectratio
+}
+
+% Amélioration de l'espacement des paragraphes
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% Évite au maximum les titres isolés en bas de page
+\usepackage{needspace}
