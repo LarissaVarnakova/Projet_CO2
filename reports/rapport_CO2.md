@@ -18,13 +18,13 @@
 
 # Résumé
 
-Ce projet de Data Science porte sur l’analyse et la prédiction des émissions de CO₂ des véhicules commercialisés en France à partir de leurs caractéristiques techniques et environnementales. Le jeu de données étudié regroupe 55 044 observations et 30 variables relatives notamment à la motorisation, à la puissance, à la masse, à la consommation de carburant et aux émissions de polluants.
+Ce projet de Data Science porte sur l’analyse et la prédiction des émissions de CO₂ des véhicules commercialisés en France à partir de leurs caractéristiques techniques et environnementales. Le jeu de données brut regroupe 55 044 observations et 30 variables ; après suppression de 7 doublons stricts puis de 34 observations sans valeur cible `co2`, 55 003 observations sont conservées pour la modélisation, relatives notamment à la motorisation, à la puissance, à la masse, à la consommation de carburant et aux émissions de polluants.
 
 Une première phase d’analyse exploratoire a permis d’évaluer la qualité des données, d’étudier les distributions et d’identifier les principales relations entre les variables. Les analyses graphiques et statistiques mettent notamment en évidence une forte association entre les émissions de CO₂ et la consommation de carburant, ainsi que l’influence de plusieurs caractéristiques telles que la masse, le type de carburant, la carrosserie, la gamme et l’hybridation.
 
 Le prétraitement a ensuite consisté à nettoyer les données, traiter les valeurs manquantes, évaluer des variables dérivées, analyser les valeurs aberrantes, sélectionner les variables pertinentes et encoder les variables catégorielles. Une attention particulière a été portée à la prévention des fuites d’information, notamment en réalisant la séparation entre les jeux d’entraînement et de test avant les opérations d’imputation et d’encodage.
 
-Ces étapes ont permis d’obtenir des jeux de données cohérents, complets et exploitables pour la phase de modélisation. Plusieurs modèles de régression ont ensuite été entraînés et comparés. XGBoost est retenu comme modèle de référence avec un **R² de 0,9993** et un **RMSE de 0,8950 g/km** sur le jeu de test. La validation croisée confirme la stabilité de ses performances.
+Ces étapes ont permis d’obtenir des jeux de données cohérents, complets et exploitables pour la phase de modélisation. Plusieurs modèles de régression ont ensuite été entraînés et comparés. XGBoost est retenu comme modèle de référence avec un **R² de 0,9997** et un **RMSE de 0,5940 g/km** sur le jeu de test. La validation croisée confirme la stabilité de ses performances.
 
 Enfin, l’analyse SHAP met en évidence le rôle prépondérant de la consommation mixte dans les prédictions du modèle, devant les autres caractéristiques techniques et certaines informations liées au carburant. Ces résultats prolongent les constats issus de l’analyse exploratoire et permettent de répondre aux deux dimensions de la problématique : identifier les principaux facteurs associés aux émissions de CO₂ et construire un modèle capable de les prédire.
 
@@ -225,7 +225,7 @@ Les visualisations réalisées au cours de l'analyse exploratoire ont permis de 
 
 L'étude de la distribution des émissions de CO₂ montre une forte variabilité des niveaux d'émission entre les véhicules commercialisés en France en 2014. Cette dispersion confirme l'intérêt de rechercher les variables les plus explicatives afin d'améliorer les performances des modèles prédictifs.
 
-Comme l'illustre la **Figure 2**, la consommation de carburant présente une relation positive très marquée avec les émissions de CO₂. Une augmentation de la consommation s'accompagne systématiquement d'une augmentation des émissions. Cette tendance est particulièrement nette pour la consommation mixte, qui apparaît comme le meilleur indicateur des émissions de CO₂ parmi les différentes mesures de consommation. Ce résultat constitue l'un des principaux enseignements de l'analyse exploratoire et justifiera les choix réalisés lors de la phase de sélection des variables.
+Comme l'illustre la **Figure 2**, la consommation de carburant présente une relation positive très marquée avec les émissions de CO₂. Une augmentation de la consommation s'accompagne généralement d'une augmentation des émissions. Cette tendance est particulièrement nette pour la consommation mixte, qui apparaît comme le meilleur indicateur des émissions de CO₂ parmi les différentes mesures de consommation. Ce résultat constitue l'un des principaux enseignements de l'analyse exploratoire et justifiera les choix réalisés lors de la phase de sélection des variables.
 
 ![](figures/image-1.png)
 
@@ -249,14 +249,19 @@ Les analyses graphiques mettent en évidence des relations claires entre les car
 
 L'étude des corrélations a permis d'identifier les variables quantitatives les plus fortement associées aux émissions de CO₂.
 
-Comme l'illustre la **Figure 4**, la matrice de corrélation met en évidence une forte relation positive entre les émissions de CO₂ et les différentes mesures de consommation de carburant. La consommation mixte (`conso_mixte`) présente la corrélation la plus élevée avec les émissions de CO₂ (≈ 0,97), suivie des consommations urbaine (`conso_urb`) et extra-urbaine (`conso_exurb`).
+Comme l’illustre la **Figure 4**, la matrice de corrélation des variables numériques met en évidence une forte relation positive entre les émissions de CO₂ et les différentes mesures de consommation de carburant. Elle permet également de visualiser les relations entre les autres caractéristiques quantitatives, ainsi que les corrélations existant entre variables explicatives.
 
+![Matrice de corrélation des variables numériques](figures/image-3.png)
 
-![](figures/image-3.png)
+**Figure 4 – Matrice de corrélation des variables numériques.** Les coefficients représentent l'intensité et le sens des relations linéaires entre les variables. La corrélation ne constitue pas, à elle seule, une preuve de causalité.
 
-**Figure 4 – Matrice de corrélation des principales variables quantitatives.**
+La forte association entre les trois mesures de consommation apparaît également dans une matrice ciblée :
 
-Les variables relatives à la masse du véhicule présentent également des corrélations positives importantes avec les émissions de CO₂. À l'inverse, certaines variables techniques montrent des coefficients de corrélation plus faibles, traduisant une influence plus limitée sur les émissions.
+![Corrélations entre les consommations](figures/correlations_consommations.png)
+
+**Figure 5 – Corrélations entre les consommations urbaine, extra-urbaine et mixte, calculées sur le jeu d’entraînement.**
+
+Les variables relatives à la masse du véhicule présentent également des corrélations positives importantes avec les émissions de CO₂. À l'inverse, certaines variables techniques présentent des coefficients de corrélation plus faibles, traduisant une association linéaire moins marquée avec les émissions.
 
 Les coefficients de Pearson et de Spearman ont permis de confirmer ces résultats. Malgré des approches différentes (relation linéaire pour Pearson et relation monotone pour Spearman), les deux méthodes conduisent aux mêmes conclusions générales concernant les variables les plus influentes.
 
@@ -288,19 +293,19 @@ Les analyses de variance montrent que le type de carburant, la carrosserie et la
 
 Un test de Student a été réalisé afin de comparer les émissions moyennes de CO₂ entre les véhicules hybrides et les véhicules non hybrides.
 
-Comme l'illustre la **Figure 5**, les véhicules hybrides présentent des émissions de CO₂ globalement plus faibles que les véhicules non hybrides. Cette différence visuelle suggère que les deux groupes ne suivent pas la même distribution, ce qui justifie la réalisation d'un test de Student afin de déterminer si cet écart est statistiquement significatif.
+Comme l'illustre la **Figure 6**, les véhicules hybrides présentent des émissions de CO₂ globalement plus faibles que les véhicules non hybrides. Cette différence visuelle suggère que les deux groupes ne suivent pas la même distribution, ce qui justifie la réalisation d'un test de Student afin de déterminer si cet écart est statistiquement significatif.
 
 ![](figures/image-6.png)
 
-**Figure 5 – Distribution des émissions de CO₂ selon le type d'hybridation des véhicules.**
+**Figure 6 – Distribution des émissions de CO₂ selon le type d'hybridation des véhicules.**
 
-Les résultats du test mettent en évidence une différence statistiquement significative entre les deux groupes. Les véhicules hybrides présentent des émissions moyennes de CO₂ significativement plus faibles que les véhicules non hybrides. Ce résultat confirme les observations réalisées lors de l'analyse exploratoire et souligne l'impact du type d'hybridation sur les émissions de CO₂.
+Les résultats du test mettent en évidence une différence statistiquement significative entre les deux groupes. Les véhicules hybrides présentent des émissions moyennes de CO₂ significativement plus faibles que les véhicules non hybrides. Ce résultat confirme les observations réalisées lors de l'analyse exploratoire et met en évidence une association entre l'hybridation et les niveaux d'émissions de CO₂.
 
 Au-delà de son intérêt statistique, ce résultat est cohérent avec les caractéristiques techniques des véhicules hybrides, conçus pour réduire la consommation de carburant et, par conséquent, les émissions de dioxyde de carbone.
 
 ### Synthèse
 
-Le test de Student confirme que les véhicules hybrides émettent significativement moins de CO₂ que les véhicules non hybrides. Ce résultat confirme les observations issues des analyses graphiques et met en évidence l'influence du type d'hybridation sur les émissions des véhicules.
+Le test de Student confirme que les véhicules hybrides émettent significativement moins de CO₂ que les véhicules non hybrides. Ce résultat confirme les observations issues des analyses graphiques et met en évidence une différence significative d'émissions entre les deux groupes.
 
 ## 4.6 Conclusions de l'EDA
 
@@ -318,18 +323,11 @@ Le prétraitement a été réalisé selon une démarche progressive comprenant l
 
 ## 5.1 Nettoyage des données
 
-Avant toute transformation, le jeu de données a fait l'objet d'un nettoyage afin de supprimer les informations inutiles ou non exploitables pour la modélisation.
+Les données brutes comprennent **55 044 observations et 30 variables**. Un contrôle des doublons stricts (égalité sur l'ensemble des colonnes) a identifié **7 lignes redondantes**, supprimées avant la séparation entraînement/test. Le jeu comprend alors **55 037 observations**. Une étape distincte supprime ensuite **34 observations pour lesquelles `co2` est manquant**, ce qui donne **55 003 observations exploitables**. Le découpage 80/20 produit exactement **44 002 observations pour l’entraînement** et **11 001 pour le test** (soit 55 003 au total). Il n’existe aucun écart inexpliqué dans les effectifs. Cette vérification évite qu'une observation strictement identique figure simultanément dans les deux partitions et ne fausse l'évaluation.
 
-Les premières analyses ont mis en évidence plusieurs colonnes entièrement vides (`Unnamed: 26` à `Unnamed: 29`) ainsi qu'une variable (`date_maj`) présentant une proportion très importante de valeurs manquantes. Ces variables n'apportant aucune information pertinente pour l'étude, elles ont été supprimées.
+Le jeu comporte des champs d'identification ou de description des véhicules, notamment `cnit`, `tvv`, `dscom`, `lib_mod` et `lib_mod_doss`. Ces champs ne doivent pas être assimilés sans vérification à un identifiant unique de ligne : plusieurs véhicules peuvent partager un modèle ou une description. Leur cardinalité élevée et leur intérêt limité pour la représentation choisie ont motivé leur exclusion du jeu final. Le contrôle des doublons stricts est distinct d'une recherche de véhicules techniquement similaires, qui peuvent correspondre à des observations légitimes.
 
-Certaines variables descriptives ont également été écartées au cours du prétraitement. Bien qu'utiles pour l'identification des véhicules, elles n'apportaient pas de pouvoir explicatif direct pour la prédiction des émissions de CO₂ et risquaient d'augmenter inutilement la complexité du modèle.
-
-Enfin, la variable cible (`co2`) a été séparée des variables explicatives avant le début des traitements de prétraitement. Cette séparation garantit que les transformations appliquées aux variables explicatives ne modifient jamais la variable à prédire.
-
-
-### Synthèse
-
-Le nettoyage des données a permis de conserver uniquement les informations pertinentes pour la modélisation et d'écarter les variables susceptibles d'apporter du bruit ou de biaiser les analyses. Ce nettoyage permet ainsi de disposer d'un jeu de données cohérent et pertinent avant de poursuivre les différentes étapes du prétraitement.
+Les colonnes entièrement vides `Unnamed: 26` à `Unnamed: 29`, `date_maj` très incomplète, puis `hc` et `hcnox` ont été supprimées. La variable cible `co2` a été séparée des variables explicatives. Les choix d'imputation, d'encodage et de sélection sont détaillés ci-après.
 
 ## 5.2 Séparation Train/Test
 
@@ -434,23 +432,15 @@ L'encodage des variables catégorielles retenues a ainsi permis de générer un 
 
 L'encodage des variables catégorielles a permis de transformer les variables qualitatives retenues en variables numériques tout en respectant les bonnes pratiques du Machine Learning. Réalisé après la sélection des variables et ajusté uniquement sur le jeu d'entraînement, il garantit une transformation cohérente des données avant leur utilisation par les modèles de prédiction.
 
-## 5.8 Préparation des données pour la modélisation
+## 5.8 Préparation des données pour la modélisation et standardisation
 
-La dernière étape du prétraitement a consisté à constituer les jeux de données définitifs utilisés lors de la phase de modélisation.
+Après suppression de **7 doublons stricts** puis de **34 observations sans valeur de CO₂**, le jeu de données comprend **55 003 observations**, réparties entre **44 002 observations d’entraînement** et **11 001 observations de test**. L'encodage One-Hot des variables catégorielles aboutit à **93 variables explicatives**. Les opérations apprises sur les données (notamment imputation et encodage) sont ajustées sur l'entraînement et appliquées au test, afin de limiter les fuites d'information.
 
-Conformément aux décisions prises lors de la sélection des variables, les variables numériques et textuelles jugées peu pertinentes ou redondantes ont été supprimées des jeux d'entraînement et de test avant l'encodage des variables catégorielles.
+La **standardisation** consiste à centrer et réduire chaque variable numérique par les statistiques du jeu d'entraînement (`StandardScaler`). Elle n'a pas été appliquée indistinctement à tous les algorithmes. Les arbres de décision, Random Forest, XGBoost et LightGBM sont peu sensibles à un changement linéaire d'échelle des variables. À l'inverse, les pénalisations de Ridge et Lasso et l'optimisation d'un réseau MLP peuvent y être sensibles.
 
-Les variables catégorielles retenues ont ensuite été transformées à l'aide d'un encodage One-Hot afin d'obtenir des jeux de données entièrement numériques.
+Une expérimentation dédiée a comparé les performances avec et sans standardisation pour la régression linéaire, Ridge, Lasso et le MLP. Pour les recherches d'hyperparamètres Ridge/Lasso, la standardisation a été placée **dans un `Pipeline` scikit-learn**, afin d'être réajustée à l'intérieur de chaque pli de validation croisée et de ne pas utiliser les statistiques des plis de validation pendant l'entraînement. Les résultats sont détaillés en section 6.9.
 
-Plusieurs contrôles ont ensuite été réalisés afin de vérifier la qualité des jeux de données obtenus. Les dimensions des jeux d'entraînement et de test ont été comparées afin de s'assurer de leur cohérence après l'ensemble des transformations. Les types des variables ont également été vérifiés pour confirmer que toutes les variables étaient désormais numériques.
-
-Une dernière vérification a permis de confirmer l'absence de valeurs manquantes dans les jeux de données finaux. Enfin, un aperçu des premières observations a été réalisé afin de contrôler le bon déroulement de l'ensemble des étapes de prétraitement.
-
-Ces différentes vérifications garantissent que les jeux de données sont complets, cohérents et directement exploitables pour entraîner et évaluer les modèles de Machine Learning.
-
-### Synthèse
-
-Les jeux d'entraînement et de test obtenus sont prêts pour la phase de modélisation. Les différentes étapes de prétraitement ont permis d'obtenir des jeux de données complets, cohérents et entièrement numériques, répondant aux exigences nécessaires à l'entraînement et à l'évaluation des modèles de Machine Learning.
+Les jeux finaux ont fait l'objet de contrôles de dimensions, de types numériques et d'absence de valeurs manquantes.
 
 ## 5.9 Synthèse du prétraitement
 
@@ -460,135 +450,198 @@ Les jeux d'entraînement et de test obtenus sont complets, entièrement numériq
 
 # 6. Modélisation
 
-## 6.1 Objectif et protocole d'évaluation
+## 6.1 Objectif, protocole d'évaluation et logique de progression
 
-À l'issue des étapes d'exploration et de prétraitement, les jeux de données utilisés pour la modélisation sont entièrement numériques et ne comportent plus de valeurs manquantes. Le jeu d'entraînement contient **44 008 observations et 91 variables**, tandis que le jeu de test contient **11 002 observations et 91 variables**.
+Le jeu de modélisation comporte **44 002 lignes d'entraînement**, **11 001 lignes de test** et **93 variables explicatives** après encodage One-Hot. Les modèles sont comparés sur les mêmes données de test au moyen de la MAE, du RMSE, du R² et de la MAPE. Le RMSE pénalise plus fortement les grandes erreurs ; la MAE mesure l'erreur absolue moyenne ; le R² mesure la variance expliquée. Les valeurs de MAPE sont exprimées sous forme de proportion (par exemple 0,0017 correspond à 0,17 %).
 
-L'objectif de cette phase est de construire plusieurs modèles de régression capables de prédire les émissions de CO₂ à partir des caractéristiques techniques et énergétiques des véhicules. Les modèles sont évalués principalement à l'aide de quatre métriques : la **MAE** (*Mean Absolute Error*), le **RMSE** (*Root Mean Squared Error*), le **R²** (coefficient de détermination) et la **MAPE** (*Mean Absolute Percentage Error*).
+L'ordre des modèles répond à une démarche progressive, plutôt qu'à une simple énumération : **DummyRegressor** établit un niveau minimal ; les **régressions linéaires** testent une relation additive simple et interprétable ; **Ridge et Lasso** examinent l'intérêt d'une régularisation ; un **arbre de décision** introduit des interactions et seuils non linéaires ; le **bagging de Random Forest** réduit la sensibilité à un arbre isolé ; les méthodes de **boosting XGBoost et LightGBM** construisent des arbres successifs pour corriger les erreurs ; enfin, le **MLP** teste une autre famille, fondée sur l'apprentissage de représentations non linéaires. Chaque changement de famille répond ainsi à une hypothèse de modélisation testable.
 
-Plusieurs familles de modèles ont été étudiées afin de comparer des approches de complexité croissante : un modèle de référence, des modèles linéaires, un arbre de décision, des méthodes d'ensemble fondées sur les arbres et, enfin, un réseau de neurones.
+L'optimisation des hyperparamètres par `GridSearchCV` explore un ensemble de configurations prédéfini, en évaluant chaque configuration sur des plis de validation croisée du seul jeu d'entraînement. Le meilleur score de validation ne garantit pas une amélioration sur le test : les deux résultats sont distingués dans le rapport.
+
+### Recherche d’hyperparamètres et validation croisée
+
+La recherche par grille (`GridSearchCV`) consiste à définir explicitement plusieurs valeurs possibles pour chaque hyperparamètre, puis à évaluer toutes leurs combinaisons. Nous avons utilisé une **validation croisée à cinq plis** et le **R² comme critère de sélection** pour les modèles optimisés. À chaque itération, quatre plis servent à l’ajustement et le cinquième à la validation ; les performances sont moyennées pour comparer les configurations. Le jeu de test demeure distinct de cette recherche.
+
+Cette méthode a été appliquée à Ridge et Lasso (intensité de régularisation `alpha`), à l’arbre de décision (profondeur et tailles minimales des nœuds et feuilles), à Random Forest (nombre et profondeur des arbres, seuils de division), ainsi qu’à XGBoost et LightGBM (nombre d’estimateurs, taux d’apprentissage, profondeur, et nombre de feuilles pour LightGBM). L’intérêt de cette procédure est de rendre explicites les compromis entre complexité, qualité d’ajustement et généralisation.
+
+Les **courbes d’apprentissage** complètent la recherche par grille : elles comparent le R² obtenu sur l’entraînement et sur la validation croisée pour plusieurs tailles d’échantillon. Une différence persistante entre les courbes peut révéler une variance élevée ; deux courbes proches mais insuffisantes peuvent suggérer un biais important. À l’inverse, leur convergence vers des scores élevés témoigne d’une meilleure stabilité. 
+Les courbes d'apprentissage de Random Forest, XGBoost et LightGBM sont présentées dans les sections consacrées à ces modèles.
 
 ## 6.2 Baseline : DummyRegressor
 
 Un **DummyRegressor** a d'abord été utilisé comme modèle de référence. Il prédit systématiquement la moyenne de la variable cible et permet ainsi de disposer d'un niveau de performance minimal auquel comparer les autres modèles.
 
-Les performances obtenues sont faibles : **MAE = 22,51 g/km**, **RMSE = 34,40 g/km**, **R² ≈ 0** et **MAPE = 0,1310**. Ce résultat confirme qu'une prédiction reposant uniquement sur la moyenne ne permet pas de représenter correctement la variabilité des émissions de CO₂.
+Les performances obtenues sont faibles : **MAE = 22,45 g/km**, **RMSE = 34,16 g/km**, **R² ≈ 0** et **MAPE = 0,1298**. Ce résultat confirme qu'une prédiction reposant uniquement sur la moyenne ne permet pas de représenter correctement la variabilité des émissions de CO₂.
 
 Cette baseline constitue donc un point de comparaison utile pour mesurer l'apport réel des modèles de Machine Learning.
 
-## 6.3 Modèles linéaires
+## 6.3 Modèles linéaires et régularisation
 
 ### 6.3.1 Régression linéaire
 
-La régression linéaire constitue la première approche supervisée testée. Malgré sa simplicité, elle obtient d'excellentes performances : **MAE = 1,10 g/km**, **RMSE = 1,80 g/km**, **R² = 0,9973** et **MAPE = 0,0061**.
+La régression linéaire constitue le premier modèle supervisé, choisi pour sa simplicité et son interprétabilité. Sur le jeu de test, elle obtient **MAE = 1,0922 g/km**, **RMSE = 1,7402 g/km**, **R² = 0,9974** et **MAPE = 0,0059**. Ces résultats montrent qu'une relation additive fournit déjà une prédiction très précise. Les graphiques réel/prédit, résidus et courbes d'apprentissage du notebook permettent d'examiner la qualité de l'ajustement au-delà du score global.
 
-Les scores R² obtenus sur les jeux d'entraînement (**0,9972**) et de test (**0,9973**) sont quasiment identiques. Cet écart très faible indique une bonne capacité de généralisation et ne met pas en évidence de surapprentissage.
+### 6.3.2 Ridge et Lasso
 
-L'analyse des valeurs réelles et prédites, des résidus et de la courbe d'apprentissage confirme la qualité de l'ajustement. Les prédictions sont très proches des valeurs observées et les résidus restent globalement centrés autour de zéro.
+**Ridge** applique une pénalisation L2 qui limite les coefficients trop importants ; **Lasso** applique une pénalisation L1, susceptible d'annuler certains coefficients. Ces modèles permettent de tester si la régularisation améliore la robustesse ou simplifie la représentation. Les configurations optimisées sur les données d’entraînement atteignent : **Ridge : MAE = 1,0925, RMSE = 1,7401, R² = 0,9974, MAPE = 0,0060** ; **Lasso : MAE = 1,0922, RMSE = 1,7401, R² = 0,9974, MAPE = 0,0059**. Les erreurs sont exprimées en g/km pour MAE et RMSE.
 
-### 6.3.2 Régression Ridge
+L'optimisation de `alpha` par validation croisée conduit à des performances pratiquement identiques à la régression linéaire. Cela montre que la régularisation n'apporte ici aucun gain prédictif notable, même si elle conserve un intérêt méthodologique. Les résultats sans standardisation et après standardisation sont distingués en section 6.9.
 
-La régression Ridge introduit une régularisation L2 afin de limiter l'influence de coefficients trop importants. Elle obtient des performances très proches de celles de la régression linéaire : **MAE = 1,12 g/km**, **RMSE = 1,82 g/km**, **R² = 0,9972** et **MAPE = 0,0062**.
+## 6.4 Arbre de décision : introduction de la non-linéarité
 
-Les scores d'entraînement (**R² = 0,9971**) et de test (**R² = 0,9972**) restent très proches. La régularisation conserve donc une excellente capacité prédictive, sans amélioration significative par rapport à la régression linéaire simple.
+L'arbre de décision segmente les observations à partir de seuils sur les caractéristiques, ce qui lui permet de modéliser des relations non linéaires et des interactions que la régression linéaire ne représente pas directement. Sur le jeu de test, l'arbre optimisé obtient **MAE = 0,1423 g/km**, **RMSE = 0,8176 g/km**, **R² = 0,9994** et **MAPE = 0,0010**.
 
-### 6.3.3 Régression Lasso
+L'amélioration par rapport aux modèles linéaires justifie le passage à la famille des arbres. Toutefois, un arbre unique peut être sensible à de petites variations de l'échantillon d'entraînement et au surapprentissage ; cette limite motive l'étude du **bagging** avec Random Forest. Les courbes d'apprentissage et les résidus du notebook permettent d'apprécier ces risques.
 
-La régression Lasso applique une régularisation L1, susceptible de réduire certains coefficients jusqu'à zéro. Ses performances restent bonnes mais sont inférieures à celles des deux modèles linéaires précédents : **MAE = 3,94 g/km**, **RMSE = 5,65 g/km**, **R² = 0,9730** et **MAPE = 0,0206**.
+## 6.5 Random Forest : du modèle unique au bagging
 
-Les scores R² d'entraînement (**0,9710**) et de test (**0,9730**) restent cohérents, ce qui indique une bonne généralisation. En revanche, la pénalisation appliquée par Lasso réduit ici la précision des prédictions.
+Random Forest agrège des arbres entraînés sur des échantillons bootstrap et des sous-ensembles de variables. Cette combinaison réduit généralement la variance et la dépendance aux décisions d'un arbre isolé. Le modèle optimisé obtient **MAE = 0,0925 g/km**, **RMSE = 0,7112 g/km**, **R² = 0,9996** et **MAPE = 0,0006**. Il présente la **meilleure MAE** de la comparaison globale.
 
-## 6.4 Arbre de décision
+La grille de recherche a porté sur `n_estimators`, `max_depth`, `min_samples_split` et `min_samples_leaf`. La configuration retenue comprend **100 arbres**, une profondeur maximale de **20**, `min_samples_split=2` et `min_samples_leaf=1`. L’objectif était d’évaluer l’effet de la complexité des arbres et de leur nombre sur les performances, avec cinq plis de validation croisée. Le choix final repose sur les performances vérifiées et non sur le seul fait d'avoir exécuté une recherche. Random Forest améliore ici l'erreur absolue moyenne et le RMSE de l'arbre isolé ; pour explorer une stratégie d'ensemble différente, la famille du **boosting** est ensuite évaluée.
 
-L'arbre de décision permet de modéliser des relations non linéaires entre les caractéristiques des véhicules et les émissions de CO₂. Il améliore nettement les performances des modèles linéaires, avec un **MAE d'environ 0,09 g/km**, un **RMSE de 1,43 g/km**, un **R² de 0,9983** et une **MAPE de 0,0006** lors de son évaluation.
+### Courbe d'apprentissage et généralisation
 
-Le score R² atteint **0,99999** sur le jeu d'entraînement contre **0,99827** sur le jeu de test. Le modèle reste donc très performant sur les données non vues, même si l'écart avec le score d'entraînement est plus marqué que pour les modèles linéaires.
+La courbe d'apprentissage de Random Forest permet d'étudier l'évolution des performances du modèle en fonction du nombre d'observations utilisées pour l'entraînement.
 
-Cette expérimentation montre l'intérêt des modèles à base d'arbres pour capturer les relations non linéaires présentes dans les données.
+![Courbe d'apprentissage Random Forest](figures/random_forest_apprentissage.png)
 
-## 6.5 Random Forest
+**Figure 7 – Courbe d'apprentissage de Random Forest – Validation croisée à trois plis.**
 
-Le **Random Forest** agrège plusieurs arbres de décision entraînés sur des échantillons bootstrap. Cette méthode de bagging vise notamment à réduire la variance d'un arbre unique et à améliorer sa robustesse.
+Les scores de validation augmentent avec la taille de l'échantillon, tandis que les scores d'entraînement restent très élevés. La réduction de l'écart entre les deux courbes montre que l'augmentation du nombre d'observations contribue à stabiliser les performances du modèle.
 
-Le modèle obtient d'excellentes performances. Dans la comparaison finale, il atteint **MAE = 0,0994 g/km**, **RMSE = 1,0044 g/km**, **R² = 0,9991** et **MAPE = 0,0007**. Les scores d'entraînement (**R² = 0,9999**) et de test (**R² = 0,9991**) restent très proches.
+Cette analyse complète les résultats obtenus sur le jeu de test et permet d'apprécier la capacité de généralisation de Random Forest.
 
-Une optimisation avec **GridSearchCV** a également été réalisée. Les meilleurs paramètres identifiés correspondent à la configuration initiale : **100 arbres**, aucune limite de profondeur, `min_samples_split = 2` et `min_samples_leaf = 1`. Le score moyen obtenu en validation croisée est de **0,9987**.
+## 6.6 XGBoost : boosting et analyse des erreurs
 
-L'optimisation ne modifie donc pas les performances du modèle, mais confirme que la configuration initiale est déjà adaptée au jeu de données.
+### Principe et configuration
 
-## 6.6 XGBoost
+**XGBoost (Extreme Gradient Boosting)** repose sur un ensemble d’arbres construits successivement. Contrairement à Random Forest, qui agrège des arbres entraînés en parallèle, chaque nouvel arbre du boosting contribue à corriger les erreurs du modèle précédent. Cette stratégie permet d’apprendre des relations complexes entre caractéristiques techniques et émissions de CO₂, tout en contrôlant la complexité des arbres et l’amplitude des corrections.
 
-Le modèle **XGBoost** repose sur le principe du boosting : les arbres sont construits de manière séquentielle, chaque nouvel arbre cherchant à corriger les erreurs des précédents.
+Nous avons entraîné un premier modèle `XGBRegressor` avec **100 arbres** (`n_estimators=100`), une **profondeur maximale de 6** (`max_depth=6`), un **taux d’apprentissage de 0,1** (`learning_rate=0.1`) et une graine aléatoire fixée à **42**. Le nombre d’arbres détermine les étapes successives du boosting ; la profondeur contrôle la complexité des interactions représentées ; le taux d’apprentissage module la contribution de chaque arbre.
 
-Avec ses paramètres retenus, XGBoost obtient les meilleures performances globales de l'étude : **MAE = 0,2975 g/km**, **RMSE = 0,8950 g/km**, **R² = 0,9993** et **MAPE = 0,0017**.
+Sur le jeu de test, ce modèle obtient **MAE = 0,2908 g/km**, **RMSE = 0,5940 g/km**, **R² = 0,9997** et **MAPE = 0,0017**. Il présente le **RMSE le plus faible** et le **R² le plus élevé** de notre comparaison globale. Le R² d’entraînement (**0,9998**) reste proche de celui du test (**0,9997**).
 
-Les scores R² sur les jeux d'entraînement (**0,9998**) et de test (**0,9993**) sont très proches, ce qui confirme une excellente capacité de généralisation.
+### Recherche d’hyperparamètres avec GridSearchCV
 
-![Valeurs réelles et prédites avec XGBoost](figures/figure-7-xgboost-reel-predit.png)
+Pour étudier l’influence des principaux réglages, nous avons défini une grille de **12 configurations** : `n_estimators` parmi **100 et 200**, `learning_rate` parmi **0,05 et 0,1**, et `max_depth` parmi **4, 6 et 8**. Avec une validation croisée à **5 plis**, cette recherche correspond à **60 ajustements**. Le critère d’optimisation est le R² moyen de validation croisée.
 
-**Figure 6 – Comparaison entre les valeurs réelles et les valeurs prédites par XGBoost.**
+La meilleure configuration de cette grille utilise **200 arbres**, une **profondeur de 4** et un **taux d’apprentissage de 0,1**, avec un **R² moyen de validation croisée de 0,9992**. Son évaluation sur le jeu de test donne un **R² de 0,9996** et un **RMSE proche de 0,71 g/km**. Les performances du modèle initial sont légèrement meilleures sur le jeu de test : la recherche par grille apporte donc une comparaison structurée des hyperparamètres, sans garantir une amélioration systématique de toutes les métriques.
 
-La quasi-totalité des observations se situe à proximité de la diagonale représentant une prédiction parfaite. Quelques écarts subsistent pour certaines valeurs élevées, mais ils restent limités au regard de l'ensemble des données.
+### Concordance entre valeurs réelles et prédictions
 
-Une optimisation avec **GridSearchCV** a également été testée. Le modèle optimisé obtient **MAE = 0,42 g/km**, **RMSE = 0,98 g/km**, **R² = 0,9992** et **MAPE = 0,0024**. Ces performances étant légèrement inférieures à celles du modèle initial, la version initiale de XGBoost est conservée comme modèle de référence.
+![Valeurs réelles et prédites avec XGBoost](figures/xgboost_reel_predit.png)
 
-## 6.7 LightGBM
+**Figure 8 – Émissions réelles et prédites par XGBoost sur le jeu de test.** Les observations sont très majoritairement proches de la diagonale de prédiction parfaite, ce qui confirme la précision globale du modèle.
 
-Le modèle **LightGBM** constitue une autre approche de boosting fondée sur les arbres de décision. Avec ses paramètres par défaut, il obtient **MAE = 0,41 g/km**, **RMSE = 2,01 g/km**, **R² = 0,9966** et **MAPE = 0,0024**.
+### Analyse des résidus
 
-Une optimisation avec GridSearchCV a ensuite permis d'identifier la configuration suivante : `learning_rate = 0.1`, `max_depth = 8`, `n_estimators = 200` et `num_leaves = 31`. Le modèle optimisé atteint **MAE = 0,40 g/km**, **RMSE = 1,62 g/km**, **R² = 0,9978** et **MAPE = 0,0023**.
+![Résidus en fonction des prédictions XGBoost](figures/xgboost_residus.png)
 
-Contrairement aux résultats obtenus avec Random Forest et XGBoost, l'optimisation améliore ici les performances de LightGBM. Le modèle reste toutefois en retrait par rapport à XGBoost et Random Forest.
+**Figure 9 – Résidus (`co2` réel moins `co2` prédit) en fonction des prédictions XGBoost.** La concentration des erreurs autour de zéro confirme la qualité de l’ajustement pour la majorité des véhicules. L’examen des points plus éloignés reste important : un R² très élevé ne signifie pas que chaque prédiction est exacte.
 
-## 6.8 Expérimentations complémentaires
+### Courbe d’apprentissage et généralisation
 
-### 6.8.1 Transformation logarithmique de la variable cible
+![Courbe d'apprentissage XGBoost](figures/xgboost_apprentissage.png)
 
-Une transformation logarithmique de la variable cible a été testée afin d'évaluer si elle permettait d'améliorer les performances des modèles linéaires.
+**Figure 10 – Courbe d’apprentissage de XGBoost : R² moyen sur entraînement et validation croisée à cinq plis.** Les scores de validation progressent avec le nombre d’observations disponibles et se rapprochent des scores d’entraînement. Cette représentation complète le diagnostic train/test : elle montre comment la quantité de données influe sur la stabilité de la prédiction.
 
-Après retour à l'échelle d'origine, la régression linéaire obtient **R² = 0,9439**, Ridge **R² = 0,9432** et Lasso **R² = 0,5754**. Ces résultats sont inférieurs à ceux obtenus directement sur la variable cible initiale.
+### Interprétation des variables
 
-La transformation logarithmique n'apporte donc pas de gain dans le cadre de ce jeu de données et n'est pas retenue pour la suite.
+L’analyse SHAP présentée au chapitre 8 complète ces diagnostics en mesurant la contribution des variables aux prédictions. Elle met notamment en évidence la place prépondérante de `conso_mixte`. Cette importance doit être interprétée en tenant compte de la forte relation entre consommation de carburant et émissions de CO₂, ainsi que des conditions dans lesquelles la consommation mixte est effectivement disponible pour prédire les émissions.
 
-### 6.8.2 Validation croisée
+## 6.7 LightGBM : seconde méthode de boosting
 
-Une validation croisée a été réalisée afin d'évaluer la stabilité des principaux modèles d'ensemble sur plusieurs partitions des données.
+LightGBM permet de confronter XGBoost à une autre implémentation du gradient boosting, avec une stratégie de construction des arbres différente. Le modèle optimisé atteint **MAE = 0,3701 g/km**, **RMSE = 1,2902 g/km**, **R² = 0,9986** et **MAPE = 0,0021** sur le jeu de test actualisé. Les essais de `GridSearchCV` servent à mesurer l'intérêt d'une optimisation des hyperparamètres plutôt qu'à présumer une amélioration systématique.
 
-XGBoost obtient un **R² moyen de 0,9994** avec un écart-type très faible, devant Random Forest (**R² moyen = 0,9992**) et LightGBM (**R² moyen = 0,9985**).
+LightGBM reste performant mais présente ici un RMSE supérieur à celui de XGBoost et Random Forest. Cette comparaison confirme qu'aucune implémentation de boosting ne domine nécessairement toutes les autres.
 
-Ces résultats confirment la stabilité des performances observées sur le jeu de test et renforcent le choix de XGBoost comme modèle de référence.
+### Courbe d'apprentissage et généralisation
 
-### 6.8.3 Perceptron Multicouche (MLP)
+Afin de compléter l'évaluation de LightGBM, une courbe d'apprentissage a été réalisée pour observer l'évolution des performances sur les données d'entraînement et de validation.
 
-Un **Perceptron Multicouche (MLP)** a également été expérimenté afin d'évaluer une approche de Deep Learning sur les mêmes données.
+![Courbe d'apprentissage LightGBM](figures/lightgbm_apprentissage.png)
 
-Le MLP obtient un **MAE de 1,1335 g/km**, un **RMSE de 1,6804 g/km**, un **R² de 0,9976** et une **MAPE de 0,0061**. Ces résultats montrent qu'un réseau de neurones simple est capable de modéliser efficacement les émissions de CO₂.
+**Figure 11 – Courbe d'apprentissage de LightGBM – Validation croisée à cinq plis.**
 
-Le MLP présente notamment un **R² supérieur à ceux de la régression linéaire, de Ridge et de LightGBM**. Il reste toutefois en retrait par rapport aux modèles les plus performants de cette étude, notamment XGBoost et Random Forest.
+Cette représentation permet de comparer les scores d'entraînement et de validation à mesure que le nombre d'observations augmente.
 
-Cette expérimentation montre que les approches de Deep Learning peuvent être envisagées pour ce type de problématique, même si, dans le cadre de cette étude, les meilleurs résultats restent obtenus par les méthodes d'ensemble fondées sur les arbres.
+Elle complète l'analyse des performances obtenues sur le jeu de test et permet d'apprécier la capacité de généralisation de LightGBM, tout en offrant un point de comparaison supplémentaire avec XGBoost.
+
+## 6.8 Expérimentations complémentaires et MLP
+
+### 6.8.1 Transformation logarithmique et validation croisée
+
+Une transformation logarithmique de la cible a été explorée dans le notebook principal. Après retour à l’échelle initiale, les scores R² sont de **0,9390 pour la régression linéaire**, **0,9419 pour Ridge** et **0,5737 pour Lasso**. Ces résultats sont inférieurs aux modèles sans transformation ; la transformation n’a donc pas été retenue.
+
+La validation croisée à **5 plis**, réalisée sur les **44 002 observations d’entraînement**, donne les résultats suivants, lus directement dans les sorties actualisées du notebook principal :
+
+| Modèle | R² moyen CV | Écart-type CV |
+|---|---:|---:|
+| XGBoost | 0,9991 | 0,0005 |
+| Random Forest optimisé | 0,9991 | 0,0007 |
+| LightGBM optimisé | 0,9980 | 0,0013 |
+
+Les deux premiers modèles sont à égalité à quatre décimales sur le R² moyen, mais XGBoost présente une dispersion légèrement plus faible entre les plis. Cette validation croisée complète l’évaluation sur le jeu de test.
+
+### 6.8.2 MLP : une autre famille de modèles
+
+Le **Perceptron Multicouche** explore une approche non linéaire différente des arbres. L'architecture expérimentée comprend une couche d'entrée de **93 caractéristiques**, deux couches denses cachées de **64 et 32 neurones avec activation ReLU**, puis un neurone de sortie pour la régression, soit **8 129 paramètres**. L'apprentissage utilise l'optimiseur **Adam**, la perte **MSE**, la métrique **MAE**, **100 epochs**, des lots de **32** observations et une fraction de validation de **20 %** du jeu d'entraînement. Une graine aléatoire est fixée pour améliorer la reproductibilité.
+
+Sans standardisation, le MLP obtient **MAE = 0,5863 g/km**, **RMSE = 1,5947 g/km**, **R² = 0,9978** et **MAPE = 0,0034**. Après standardisation, il atteint **MAE = 0,5726 g/km**, **RMSE = 1,3766 g/km**, **R² = 0,9984** et **MAPE = 0,0034**. Les courbes de perte d'entraînement et de validation permettent d’examiner la convergence et d’identifier un éventuel surapprentissage. Le suivi de la MSE sur les deux sous-ensembles est particulièrement utile : une baisse de la perte d’entraînement accompagnée d’une hausse durable de la perte de validation indiquerait une dégradation de la généralisation.
+
+![Pertes d'entraînement et de validation du MLP standardisé](figures/mlp_perte_apprentissage.png)
+
+**Figure 12 – Évolution de la MSE du MLP standardisé sur les jeux d’entraînement et de validation.**
+
+![Zoom sur les pertes du MLP standardisé](figures/mlp_perte_zoom.png)
+
+**Figure 13 – Évolution des pertes du MLP standardisé à partir de la cinquième epoch.** Ce zoom facilite la lecture de la convergence après les premières étapes d’apprentissage.
+
+### 6.8.3 Expérimentation sans `conso_mixte`
+
+Une expérimentation dédiée a supprimé la consommation mixte afin de mesurer la dépendance des modèles à cette variable. Le nombre de variables passe de **93 à 92** et les jeux conservent **44 002 / 11 001 observations**. Quatre modèles ont été comparés :
+
+| Modèle sans `conso_mixte` | MAE (g/km) | RMSE (g/km) | R² | MAPE |
+|---|---:|---:|---:|---:|
+| Régression linéaire | 9,63 | 12,92 | 0,8570 | 0,0496 |
+| Ridge | 9,67 | 12,91 | 0,8572 | 0,0498 |
+| Lasso | 12,37 | 16,99 | 0,7526 | 0,0639 |
+| Arbre de décision | 3,19 | 5,40 | 0,9750 | 0,0173 |
+
+L’écart avec les performances obtenues en présence de `conso_mixte` est particulièrement marqué pour les modèles linéaires. L’arbre de décision conserve un R² élevé mais moins bon que celui de l’expérience principale. Cette expérience montre l’importance de la disponibilité de `conso_mixte` dans le cas d’usage prédictif.
+
+### 6.8.4 Target Encoding versus One-Hot Encoding
+
+Une comparaison complémentaire a évalué le **Target Encoding** des catégories, ajusté hors pli pour les observations d'entraînement afin de limiter les fuites de cible, puis appliqué au test à partir des seules données d'entraînement. Cette méthode réduit le nombre de variables explicatives de **93 à 13**, soit une réduction d'environ **86 %**. Sur les quatre modèles comparés, le **One-Hot Encoding reste meilleur** : régression linéaire (R² 0,9974 contre 0,9837), Ridge (0,9974 contre 0,9829), Lasso (0,9923 contre 0,9808) et arbre de décision (0,9991 contre 0,9986). Ces valeurs correspondent à l'expérimentation d'encodage, dont les configurations ne doivent pas être confondues avec les modèles optimisés du tableau principal. La réduction dimensionnelle est intéressante, mais ne justifie pas de remplacer systématiquement le One-Hot Encoding.
+
+## 6.9 Étude spécifique de la standardisation
+
+| Modèle | MAE sans | MAE avec | RMSE sans | RMSE avec | R² sans | R² avec |
+|---|---:|---:|---:|---:|---:|---:|
+| Régression linéaire | 1,0922 | 1,0922 | 1,7402 | 1,7402 | 0,9974 | 0,9974 |
+| Ridge optimisé | 1,0925 | 1,0925 | 1,7401 | 1,7401 | 0,9974 | 0,9974 |
+| Lasso optimisé | 1,0922 | 1,0922 | 1,7401 | 1,7401 | 0,9974 | 0,9974 |
+| MLP | 0,5863 | 0,5726 | 1,5947 | 1,3766 | 0,9978 | 0,9984 |
+
+La régression linéaire est inchangée à la précision affichée ; Ridge et Lasso optimisés conservent des scores quasi identiques. La standardisation change cependant l'échelle de la pénalisation : l'`alpha` optimal de Ridge passe de **0,0001** à **1** dans les essais. Le MLP bénéficie davantage de la standardisation, avec une diminution du RMSE de **1,5947 à 1,3766 g/km**. La MAPE du MLP reste **0,0034** à quatre décimales. Le scaling est ajusté sur le seul entraînement.
 
 # 7. Comparaison globale des modèles
 
-La comparaison finale permet de synthétiser les performances obtenues par les différentes approches sur le jeu de test.
-
 | Modèle | MAE (g/km) | RMSE (g/km) | R² | MAPE |
 |---|---:|---:|---:|---:|
-| XGBoost | 0,2975 | 0,8950 | 0,9993 | 0,0017 |
-| Random Forest | 0,0994 | 1,0044 | 0,9991 | 0,0007 |
-| Arbre de décision | 0,0881 | 1,4307 | 0,9983 | 0,0006 |
-| MLP | 1,1335 | 1,6804 | 0,9976 | 0,0061 |
-| Régression linéaire | 1,1046 | 1,7987 | 0,9973 | 0,0061 |
-| Ridge | 1,1243 | 1,8214 | 0,9972 | 0,0062 |
-| LightGBM | 0,4116 | 2,0065 | 0,9966 | 0,0024 |
-| Lasso | 3,9410 | 5,6517 | 0,9730 | 0,0206 |
-| DummyRegressor | 22,5123 | 34,3963 | ≈ 0 | 0,1310 |
+| XGBoost | 0,2908 | 0,5940 | 0,9997 | 0,0017 |
+| Random Forest | 0,0925 | 0,7112 | 0,9996 | 0,0006 |
+| Arbre de décision | 0,1423 | 0,8176 | 0,9994 | 0,0010 |
+| LightGBM | 0,3701 | 1,2902 | 0,9986 | 0,0021 |
+| MLP sans scaling (comparaison principale) | 0,5863 | 1,5947 | 0,9978 | 0,0034 |
+| Lasso optimisé | 1,0922 | 1,7401 | 0,9974 | 0,0059 |
+| Ridge optimisé | 1,0925 | 1,7401 | 0,9974 | 0,0060 |
+| Régression linéaire | 1,0922 | 1,7402 | 0,9974 | 0,0059 |
+| DummyRegressor | 22,4525 | 34,1556 | ≈ 0 | 0,1298 |
 
-L'ensemble des modèles supervisés surpasse très largement le **DummyRegressor**, ce qui confirme que les variables explicatives retenues contiennent une information importante pour prédire les émissions de CO₂.
+*Source : sortie du tableau `comparaison_modeles` du notebook de modélisation. Le MLP avec scaling (RMSE = 1,3766 g/km) relève de l'expérimentation complémentaire présentée en section 6.9.*
 
-**XGBoost** présente le **R² le plus élevé (0,9993)** ainsi que le **RMSE le plus faible (0,8950 g/km)**. L'**Arbre de décision** obtient pour sa part le **MAE et la MAPE les plus faibles**, avec respectivement **0,0881 g/km** et **0,0006**. Ces résultats montrent que les modèles se distinguent selon des métriques complémentaires.
-
-La validation croisée confirme également la stabilité de **XGBoost**, avec un **R² moyen de 0,9994**. Au regard de l'ensemble de ces résultats, **XGBoost est retenu comme modèle principal de l'étude**.
+Tous les modèles supervisés surpassent largement le DummyRegressor. **XGBoost** obtient le meilleur R² et le meilleur RMSE, tandis que **Random Forest** minimise la MAE et la MAPE. La comparaison montre l'importance de ne pas désigner un « meilleur modèle » sans préciser le critère retenu. XGBoost est conservé comme modèle principal lorsque la réduction des erreurs importantes (RMSE) est privilégiée.
 
 # 8. Interprétation du modèle retenu avec SHAP
 
@@ -596,9 +649,9 @@ Les performances prédictives ne suffisent pas à elles seules à comprendre le 
 
 ## 8.1 Graphique de synthèse
 
-![Analyse SHAP de XGBoost](figures/figure-8-shap-xgboost-beeswarm.png)
+![Analyse SHAP de XGBoost](figures/xgboost_shap_synthese.png)
 
-**Figure 7 – Graphique SHAP de synthèse du modèle XGBoost.**
+**Figure 14 – Graphique SHAP de synthèse du modèle XGBoost.**
 
 L'analyse montre que **`conso_mixte`** est de très loin la variable la plus influente dans les prédictions du modèle. Les consommations élevées contribuent fortement à augmenter les émissions de CO₂ prédites, tandis que les faibles consommations contribuent à les diminuer.
 
@@ -606,9 +659,9 @@ Les variables **`nox`**, **`masse_ordma_max`**, **`puiss_max`** ainsi que certai
 
 ## 8.2 Importance globale des variables
 
-![Importance globale SHAP de XGBoost](figures/figure-9-shap-xgboost-importance.png)
+![Importance globale SHAP de XGBoost](figures/xgboost_shap_importance.png)
 
-**Figure 8 – Importance globale des variables selon les valeurs SHAP du modèle XGBoost.**
+**Figure 15 – Importance globale des variables selon SHAP.**
 
 Le graphique d'importance globale confirme la prédominance de **`conso_mixte`**, dont la valeur SHAP moyenne est très supérieure à celle des autres variables. Les variables `nox`, `cod_cbr_GO`, `masse_ordma_max` et `puiss_max` forment un second groupe de variables explicatives.
 
@@ -616,66 +669,43 @@ Cette hiérarchie est cohérente avec les résultats de l'analyse exploratoire, 
 
 # 9. Conclusion générale de la modélisation
 
-La phase de modélisation a permis de comparer plusieurs familles de modèles, depuis une baseline très simple jusqu'aux méthodes d'ensemble et au Deep Learning.
+L'étude progressive des familles de modèles met en évidence l'intérêt des relations non linéaires et des ensembles d'arbres pour ce jeu de données. Les modèles linéaires expliquent déjà près de 99,74 % de la variance des émissions. L'arbre de décision améliore nettement les performances ; le bagging de Random Forest réduit encore les erreurs ; le boosting XGBoost obtient le meilleur RMSE (**0,5940 g/km**) et le meilleur R² (**0,9997**).
 
-Les modèles linéaires obtiennent déjà des performances très élevées, notamment la régression linéaire et Ridge. L'utilisation de modèles fondés sur les arbres améliore encore les résultats. Random Forest et XGBoost se distinguent particulièrement, tandis que LightGBM bénéficie d'une amélioration après optimisation de ses hyperparamètres.
+L'étude du MLP et de la standardisation montre que les transformations de données doivent être adaptées à la famille d'algorithmes. Le Target Encoding réduit la dimension sans améliorer les scores observés, et la suppression de `conso_mixte` révèle une dépendance importante du modèle à cette caractéristique. Les très hauts scores doivent donc être interprétés à la lumière des variables disponibles au moment de l'usage réel.
 
-Les expérimentations complémentaires permettent de consolider ces résultats. La transformation logarithmique de la cible n'améliore pas les performances des modèles linéaires. La validation croisée confirme en revanche la stabilité des méthodes d'ensemble, en particulier de XGBoost. Le MLP obtient également de très bonnes performances, avec un R² de 0,9976 et un RMSE de 1,6804 g/km, même s'il reste en retrait par rapport à XGBoost et Random Forest.
+# 10. Difficultés rencontrées et limites
 
-Au terme de cette comparaison, **XGBoost est retenu comme modèle de référence**. Il présente le R² le plus élevé (0,9993), le RMSE le plus faible (0,8950 g/km) et une excellente stabilité en validation croisée. L'analyse SHAP complète cette évaluation en permettant d'identifier les variables qui contribuent le plus à ses prédictions.
+**Ressources de calcul.** Les recherches d'hyperparamètres, les validations croisées et l'entraînement du MLP ont mobilisé des ressources CPU et du temps d'exécution. L'absence ou l'indisponibilité d'une accélération GPU dans certains environnements a notamment ralenti les essais de réseau de neurones. Les grilles de recherche et les architectures ont été dimensionnées en conséquence.
 
+**Environnement et collaboration.** Le travail en binôme a nécessité une coordination des versions de notebooks, des fichiers de données, des dépendances Python et des branches Git. Les changements d'environnement et les problèmes rencontrés avec Git ont demandé des vérifications supplémentaires pour conserver une version commune cohérente.
 
-# 10. Difficultés rencontrées
-
-Le projet a nécessité plusieurs choix méthodologiques afin de construire une démarche cohérente et d'éviter de retenir un modèle uniquement sur la base d'une première performance.
-
-Une première difficulté a consisté à **comparer des modèles de nature très différente** à l'aide d'un protocole commun. L'utilisation systématique des mêmes métriques — MAE, RMSE, R² et MAPE — ainsi que du même jeu de test a permis de rendre les résultats comparables.
-
-L'**optimisation des hyperparamètres** a également montré qu'une recherche plus complexe ne conduit pas nécessairement à de meilleures performances. Pour Random Forest, GridSearchCV retrouve les paramètres initiaux. Pour XGBoost, la configuration optimisée testée obtient même des résultats légèrement inférieurs au modèle de départ. À l'inverse, LightGBM bénéficie réellement de cette étape. Ces résultats ont conduit à conserver, pour chaque algorithme, la configuration offrant effectivement les meilleures performances observées.
-
-La **validation des résultats** a constitué un autre point important. Les scores très élevés obtenus par plusieurs modèles ont nécessité de compléter l'évaluation sur le jeu de test par l'analyse des scores d'entraînement, des courbes d'apprentissage et une validation croisée. Cette démarche permet de vérifier que les performances ne reposent pas uniquement sur une partition particulière des données.
-
-Enfin, certaines expérimentations n'ont pas apporté d'amélioration par rapport aux modèles les plus performants. La transformation logarithmique de la cible dégrade les performances des modèles linéaires. Le MLP obtient quant à lui de très bonnes performances, mais reste en retrait par rapport à XGBoost et Random Forest. Ces essais ont néanmoins permis de mieux délimiter les approches adaptées au jeu de données étudié.
+**Évaluation.** Les très bons scores obtenus sont liés notamment à la présence de `conso_mixte`, très proche du mécanisme physique de calcul des émissions. Cela ne constitue pas automatiquement une fuite de données au sens strict, mais limite l'intérêt opérationnel d'un modèle si la consommation mixte n'est pas connue lors de la prédiction. Les résultats sans cette variable constituent un contrôle de robustesse utile. Les résultats portent sur les véhicules du jeu de données 2014 : ils ne démontrent pas, à eux seuls, une généralisation à d'autres années, protocoles d'homologation ou véhicules électriques.
 
 # 11. Conclusion générale du projet
 
-Ce projet a permis de mettre en œuvre une démarche complète de Data Science appliquée à la prédiction des émissions de CO₂ des véhicules commercialisés en France.
+Ce projet a couvert l'analyse exploratoire, le contrôle de qualité et des doublons, le prétraitement sans utilisation des statistiques du jeu de test, la modélisation et l'interprétation des émissions de CO₂ des véhicules commercialisés en France en 2014. Après suppression de **7 doublons stricts**, les données ont été préparées pour une modélisation sur **44 002 observations d'entraînement**, **11 001 de test** et **93 variables explicatives**.
 
-L'analyse exploratoire a d'abord permis de comprendre la structure et la qualité des données, d'étudier les distributions et de mettre en évidence les principales relations entre les caractéristiques des véhicules et leurs émissions. La consommation de carburant est apparue dès cette étape comme un facteur particulièrement lié aux émissions de CO₂.
+Les familles linéaires, les arbres, le bagging, le boosting et le MLP ont été comparés. **XGBoost** constitue le modèle principal avec **R² = 0,9997** et **RMSE = 0,5940 g/km** sur le test ; **Random Forest** se distingue par une **MAE = 0,0925 g/km**. L'analyse SHAP confirme la prédominance de la consommation mixte dans les prédictions. L'expérimentation sans cette variable nuance la portée opérationnelle de ces performances. Les essais de Target Encoding et de standardisation complètent les choix de préparation des données et montrent qu'aucune transformation n'est systématiquement optimale.
 
-Le prétraitement a ensuite permis de construire des jeux de données complets et exploitables pour la modélisation. Les valeurs manquantes ont été traitées, les variables peu pertinentes ou redondantes ont été étudiées, les variables catégorielles ont été encodées et la séparation entre les jeux d'entraînement et de test a été organisée de manière à limiter les risques de fuite d'information.
-
-La phase de modélisation a montré que plusieurs approches permettent d'obtenir des performances élevées. Les méthodes d'ensemble fondées sur les arbres se distinguent particulièrement. XGBoost est finalement retenu comme modèle de référence avec un **R² de 0,9993** et un **RMSE de 0,8950 g/km** sur le jeu de test. La validation croisée confirme la stabilité de ses performances.
-
-Enfin, l'analyse SHAP montre que la consommation mixte joue un rôle prépondérant dans les prédictions du modèle, devant les autres caractéristiques techniques et certaines informations liées au carburant. Cette interprétation prolonge les constats issus de l'analyse exploratoire, qui avait déjà mis en évidence l'association entre les émissions de CO₂ et la consommation, mais également le rôle de la masse, du type de carburant, de la carrosserie, de la gamme et de l'hybridation.
-
-Les résultats obtenus permettent ainsi de répondre aux deux dimensions de la problématique initiale. D'une part, l'analyse exploratoire, les analyses statistiques et SHAP permettent d'identifier les principales caractéristiques associées aux émissions de CO₂ dans le jeu de données étudié. D'autre part, la comparaison des modèles montre qu'il est possible d'exploiter ces caractéristiques pour construire un modèle prédictif performant, XGBoost atteignant un **R² de 0,9993** et un **RMSE de 0,8950 g/km** sur le jeu de test.
-
-Le projet aboutit ainsi à un pipeline complet allant de l'exploration des données à l'entraînement, à la comparaison et à l'interprétation des modèles. Le modèle XGBoost retenu a également été sauvegardé afin de pouvoir être réutilisé sans nécessiter un nouvel entraînement.
+Ce travail illustre l’intérêt d’une démarche comparative associant préparation rigoureuse des données, évaluation des modèles et interprétation des prédictions. Il montre également l’importance de définir les variables disponibles au moment de l’utilisation du modèle.
 
 # 12. Perspectives d'évolution
 
-Bien que les résultats obtenus soient très satisfaisants, plusieurs pistes d'amélioration ont été identifiées au cours du projet.
+## 12.1 Approfondir le Target Encoding sans généralisation automatique
 
-## 12.1 Généraliser le Target Encoding
+Le Target Encoding a réduit les variables de **93 à 13**, mais les quatre modèles testés ont obtenu des performances inférieures à celles du One-Hot Encoding. La perspective n'est donc plus de le généraliser d'emblée, mais d'étudier ses compromis entre dimension, temps de calcul, stabilité et précision, éventuellement sur d'autres algorithmes, avec un encodage hors pli pour prévenir les fuites de cible.
 
-Le **Target Encoding** a été testé en remplacement du One-Hot Encoding sur certaines variables catégorielles. Cette approche a permis de réduire significativement le nombre de variables créées tout en conservant des performances très proches de celles obtenues avec le One-Hot Encoding.
+## 12.2 Évaluer la prédiction sans consommation mixte
 
-Une perspective intéressante consisterait à appliquer systématiquement le Target Encoding à l'ensemble des modèles afin d'évaluer son impact sur leurs performances, leur temps d'entraînement et leur capacité de généralisation.
+L'expérimentation sans `conso_mixte` doit être prolongée pour mesurer la capacité du modèle à prédire à partir des seules caractéristiques disponibles avant homologation ou mesure de consommation. Cette distinction entre prédiction avec et sans consommation connue est essentielle pour préciser le cas d'usage métier.
 
-## 12.2 Approfondir les architectures de Deep Learning
+## 12.3 Améliorer le MLP et l'optimisation
 
-Le Perceptron Multicouche testé repose sur une architecture volontairement simple. L'exploration de réseaux plus profonds ainsi que l'utilisation de techniques telles que **Dropout**, **Batch Normalization** ou **EarlyStopping** pourraient permettre d'améliorer ses performances.
+Le MLP standardisé a progressé, mais demeure derrière les meilleures méthodes d'ensemble sur le RMSE. Des essais contrôlés avec `EarlyStopping`, `Dropout`, différentes architectures ou optimisation bayésienne pourraient être envisagés, en conservant un protocole comparable et un budget de calcul explicite.
 
-## 12.3 Poursuivre l'optimisation des hyperparamètres
+## 12.4 Tester la généralisation temporelle et la reproductibilité
 
-Les modèles les plus performants pourraient faire l'objet d'une optimisation plus poussée à l'aide de méthodes avancées telles que l'optimisation bayésienne ou **Optuna**, afin d'explorer plus efficacement l'espace des hyperparamètres.
-
-## 12.4 Explorer d'autres approches de Machine Learning
-
-D'autres algorithmes pourraient également être évalués, notamment **CatBoost** ou **ExtraTrees**, afin de comparer leurs performances à celles des modèles déjà étudiés et de compléter l'analyse comparative.
-
-Ces perspectives permettraient de prolonger le travail réalisé tout en conservant la démarche suivie dans le projet : tester les différentes approches, mesurer objectivement leur apport et ne retenir que les améliorations réellement confirmées par les résultats.
+Une validation sur une autre année, sous réserve d'harmoniser les schémas de données, permettrait de mieux mesurer la robustesse hors échantillon. La documentation du pipeline et de son environnement constitue également un axe d’amélioration pour faciliter la réutilisation et le partage des travaux.
 
 # Bibliographie
 
@@ -741,3 +771,15 @@ Les principales bibliothèques utilisées sont :
 - TensorFlow / Keras
 
 La gestion des versions et le travail collaboratif ont été assurés à l'aide de Git et GitHub.
+
+## Annexe D – Grilles d'optimisation utilisées
+
+
+| Modèle | Hyperparamètres étudiés | Méthode de sélection |
+|---|---|---|
+| Ridge et Lasso | `alpha` | GridSearchCV, R², 5 plis |
+| Arbre de décision | `max_depth`, `min_samples_split`, `min_samples_leaf` | GridSearchCV, R², 5 plis |
+| Random Forest | `n_estimators`, `max_depth`, `min_samples_split`, `min_samples_leaf` | GridSearchCV, R², 5 plis |
+| XGBoost | `n_estimators` : 100/200 ; `learning_rate` : 0,05/0,1 ; `max_depth` : 4/6/8 | GridSearchCV, R², 5 plis |
+| LightGBM | `n_estimators` : 100/200 ; `learning_rate` : 0,05/0,1 ; `max_depth` : 4/6/8 ; `num_leaves` : 31/50 | GridSearchCV, R², 5 plis |
+
