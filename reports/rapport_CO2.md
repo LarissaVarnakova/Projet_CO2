@@ -323,9 +323,17 @@ Le prétraitement a été réalisé selon une démarche progressive comprenant l
 
 ## 5.1 Nettoyage des données
 
-Les données brutes comprennent **55 044 observations et 30 variables**. Un contrôle des doublons stricts (égalité sur l'ensemble des colonnes) a identifié **7 lignes redondantes**, supprimées avant la séparation entraînement/test. Le jeu comprend alors **55 037 observations**. Une étape distincte supprime ensuite **34 observations pour lesquelles `co2` est manquant**, ce qui donne **55 003 observations exploitables**. Le découpage 80/20 produit exactement **44 002 observations pour l’entraînement** et **11 001 pour le test** (soit 55 003 au total). Il n’existe aucun écart inexpliqué dans les effectifs. Cette vérification évite qu'une observation strictement identique figure simultanément dans les deux partitions et ne fausse l'évaluation.
+Les données brutes comprennent **55 044 observations et 30 variables**. Un contrôle des doublons stricts (égalité sur l'ensemble des colonnes) a identifié **7 lignes redondantes**, supprimées avant la séparation entraînement/test. Le jeu comprend alors **55 037 observations**. Une étape distincte supprime ensuite **34 observations pour lesquelles `co2` est manquant**, ce qui donne **55 003 observations exploitables**. Le découpage 80/20 produit exactement **44 002 observations pour l'entraînement** et **11 001 pour le test** (soit 55 003 au total). Il n'existe aucun écart inexpliqué dans les effectifs. Cette vérification évite qu'une observation strictement identique figure simultanément dans les deux partitions et ne fausse l'évaluation.
 
-Le jeu comporte des champs d'identification ou de description des véhicules, notamment `cnit`, `tvv`, `dscom`, `lib_mod` et `lib_mod_doss`. Ces champs ne doivent pas être assimilés sans vérification à un identifiant unique de ligne : plusieurs véhicules peuvent partager un modèle ou une description. Leur cardinalité élevée et leur intérêt limité pour la représentation choisie ont motivé leur exclusion du jeu final. Le contrôle des doublons stricts est distinct d'une recherche de véhicules techniquement similaires, qui peuvent correspondre à des observations légitimes.
+Une analyse complémentaire a été menée afin de distinguer les doublons stricts des véhicules présentant des caractéristiques identiques. Le jeu de données ne comporte pas d'identifiant unique permettant d'affirmer que deux lignes correspondent à un même véhicule. Les champs `cnit` et `tvv` décrivent des références techniques, mais ne constituent pas, à eux seuls, des identifiants uniques d'observation.
+
+En comparant les lignes sur l'ensemble des colonnes d'origine **à l'exception de `cnit` et `tvv`**, nous avons identifié **4 388 groupes de caractéristiques identiques**, représentant **46 399 occurrences supplémentaires au-delà de la première occurrence de chaque groupe**, soit **50 787 observations au total dans ces groupes**.
+
+Tous ces groupes présentent plusieurs valeurs distinctes de `cnit`. Ces répétitions ne peuvent donc pas être assimilées automatiquement à des doublons stricts : elles peuvent correspondre à des références d'homologation différentes pour des véhicules techniquement similaires.
+
+En l'absence d'éléments permettant de confirmer leur redondance, **ces observations ont été conservées** afin d'éviter une perte d'information potentiellement pertinente. La suppression a ainsi été limitée aux **7 doublons stricts** identifiés initialement.
+
+Les champs d'identification ou de description `cnit`, `tvv`, `dscom`, `lib_mod` et `lib_mod_doss` ont ensuite été exclus des variables explicatives finales en raison de leur forte cardinalité, de leur nature technique ou de leur intérêt limité pour la représentation retenue. Cette sélection de variables est distincte de la décision de conserver les observations techniquement similaires.
 
 Les colonnes entièrement vides `Unnamed: 26` à `Unnamed: 29`, `date_maj` très incomplète, puis `hc` et `hcnox` ont été supprimées. La variable cible `co2` a été séparée des variables explicatives. Les choix d'imputation, d'encodage et de sélection sont détaillés ci-après.
 
@@ -341,7 +349,7 @@ La séparation Train/Test constitue une étape structurante du pipeline. Réalis
 
 ## 5.3 Traitement des valeurs manquantes
 
-L'analyse exploratoire a mis en évidence la présence de valeurs manquantes sur les variables `ptcl`, `nox` et `co_typ_1`. Leur faible taux de données manquantes (inférieur à 5 %) permettait d'envisager une imputation tout en conservant l'ensemble des observations du jeu de données.
+L'analyse exploratoire a mis en évidence la présence de valeurs manquantes sur les variables `ptcl`, `nox`, `co_typ_1` et `conso_mixte`. Les taux de données manquantes observés sur ces variables permettaient d'envisager une imputation tout en conservant les observations concernées.
 
 Avant de retenir une stratégie d'imputation, plusieurs approches ont été étudiées. Une imputation par marque de véhicule a notamment été envisagée. Cette solution n'a toutefois pas été retenue en raison de la forte disparité des effectifs entre les marques, certaines étant représentées par un nombre très limité de véhicules. Une telle approche aurait conduit à calculer des médianes sur des échantillons insuffisamment représentatifs.
 
@@ -351,31 +359,40 @@ Les stratégies retenues sont donc les suivantes :
 
 - **`ptcl`** : imputation par la médiane globale calculée sur le jeu d'entraînement ;
 - **`nox`** : imputation par la médiane du type de carburant (`cod_cbr`), avec recours à la médiane globale lorsque la catégorie ne permettait pas de calculer une médiane ;
-- **`co_typ_1`** : même stratégie que pour `nox`, fondée sur la médiane par type de carburant complétée, si nécessaire, par une médiane globale.
+- **`co_typ_1`** : même stratégie que pour `nox`, fondée sur la médiane par type de carburant complétée, si nécessaire, par une médiane globale ;
+- **`conso_mixte`** : imputation par la médiane globale calculée sur le jeu d'entraînement, puis application de cette même valeur au jeu de test.
 
-Conformément aux bonnes pratiques du Machine Learning, toutes les statistiques d'imputation ont été calculées exclusivement sur le jeu d'entraînement (`X_train`), puis appliquées à la fois au jeu d'entraînement et au jeu de test. Cette démarche garantit l'absence de fuite d'information (*data leakage*) entre les deux jeux de données.
+La variable `conso_mixte` occupant une place importante dans la prédiction des émissions de CO₂, son imputation permet de conserver les observations pour lesquelles cette information est manquante, sans utiliser les données du jeu de test pour déterminer la valeur de remplacement.
 
-La vérification réalisée après l'imputation montre qu'aucune valeur manquante ne subsiste pour les variables `ptcl`, `nox` et `co_typ_1`, confirmant la bonne application du prétraitement.
+Conformément aux bonnes pratiques du Machine Learning, toutes les statistiques d'imputation ont été calculées exclusivement sur le jeu d'entraînement (`X_train`), puis appliquées à la fois au jeu d'entraînement et au jeu de test. Cette démarche permet d'éviter une fuite d'information (*data leakage*) du jeu de test vers le jeu d'entraînement lors de cette étape de prétraitement.
+
+La vérification réalisée après l'imputation montre qu'aucune valeur manquante ne subsiste pour les variables `ptcl`, `nox`, `co_typ_1` et `conso_mixte`, confirmant la bonne application du prétraitement.
 
 ### Synthèse
 
-Le traitement des valeurs manquantes repose sur une stratégie adaptée aux caractéristiques de chaque variable. L'imputation par la médiane globale ou par la médiane conditionnelle selon le type de carburant permet de conserver l'ensemble des observations tout en limitant les risques de biais et de fuite d'information. Les données sont désormais complètes pour les variables concernées.
+Le traitement des valeurs manquantes repose sur une stratégie adaptée aux caractéristiques de chaque variable. L'imputation par la médiane globale ou par la médiane conditionnelle selon le type de carburant permet de conserver les observations tout en limitant les risques de biais et de fuite d'information. Les données sont désormais complètes pour les quatre variables concernées.
 
 ## 5.4 Feature Engineering
 
 Dans le cadre du prétraitement, plusieurs variables dérivées ont été envisagées afin d'améliorer le pouvoir explicatif du jeu de données.
 
-Une première variable a été créée en calculant le rapport entre la puissance maximale du moteur (`puiss_max`) et la masse minimale du véhicule (`masse_ordma_min`). L'objectif était de représenter le niveau de puissance rapporté au poids du véhicule, un indicateur susceptible d'influencer les émissions de CO₂.
+Une première variable, nommée `rapport_puissance_masse`, a été créée en calculant le rapport entre la puissance maximale du moteur (`puiss_max`) et la masse minimale du véhicule (`masse_ordma_min`). L'objectif était de représenter le niveau de puissance rapporté au poids du véhicule, un indicateur susceptible d'influencer les émissions de CO₂.
 
-L'analyse de cette nouvelle variable montre toutefois une corrélation linéaire faible avec les émissions de CO₂ (≈ 0,089). Ce résultat indique que ce ratio n'apporte pas d'information complémentaire significative par rapport aux variables déjà présentes dans le jeu de données. Cette variable a donc été supprimée.
+L'analyse de cette nouvelle variable montre une corrélation linéaire faible avec les émissions de CO₂ (≈ 0,089). Toutefois, une faible corrélation linéaire ne signifie pas nécessairement qu'une variable ne présente aucun intérêt prédictif, notamment pour les modèles capables de représenter des relations non linéaires.
 
-Une seconde variable, fondée sur le rapport entre la puissance maximale et la masse maximale du véhicule (`masse_ordma_max`), a également été évaluée. Là encore, la corrélation observée avec les émissions de CO₂ est restée très faible (≈ 0,054), confirmant l'absence d'apport explicatif dans cette première approche.
+Une seconde variable, nommée `rapport_puissance_masse_max`, fondée sur le rapport entre la puissance maximale et la masse maximale du véhicule (`masse_ordma_max`), a également été évaluée. Là encore, la corrélation observée avec les émissions de CO₂ est restée faible (≈ 0,054).
 
-Ces essais illustrent une démarche de feature engineering consistant à créer puis à évaluer objectivement de nouvelles variables avant de décider de leur conservation. Dans notre cas, les deux variables créées n'apportaient pas d'amélioration significative et ont donc été retirées du jeu de données afin de conserver un prétraitement simple et pertinent.
+L'analyse des relations entre les deux variables dérivées a cependant mis en évidence une **très forte corrélation entre elles (≈ 0,985)**, traduisant une importante redondance.
+
+Afin de limiter cette redondance tout en conservant une information potentiellement utile à la modélisation, **`rapport_puissance_masse` a été conservée**, tandis que **`rapport_puissance_masse_max` a été supprimée**.
+
+Ces essais illustrent une démarche de feature engineering consistant à créer puis à évaluer de nouvelles variables avant de décider de leur conservation, en tenant compte à la fois de leur relation avec la variable cible et de leur redondance avec les autres caractéristiques.
 
 ### Synthèse
 
-Les variables créées lors de cette phase de feature engineering ont été évaluées avant leur éventuelle intégration au jeu de données. Les deux ratios puissance/masse présentant un faible pouvoir explicatif vis-à-vis des émissions de CO₂, ils n'ont pas été conservés. Cette étape confirme que la création de nouvelles variables doit être guidée par leur apport réel à la modélisation.
+Les deux ratios puissance/masse créés lors de cette phase ont été évalués avant leur intégration au jeu de données final. Malgré leur faible corrélation linéaire avec les émissions de CO₂, **`rapport_puissance_masse` a été conservée**, tandis que **`rapport_puissance_masse_max` a été écartée** en raison de leur forte redondance.
+
+Cette étape confirme que la sélection des variables ne doit pas reposer uniquement sur leur corrélation avec la cible, mais également sur leur complémentarité et leur intérêt potentiel pour les modèles de Machine Learning.
 
 ## 5.5 Détection et traitement des valeurs aberrantes
 
@@ -383,13 +400,17 @@ La présence de valeurs aberrantes a été étudiée sur les principales variabl
 
 Des boxplots ont été réalisés afin d'identifier les observations situées à l'extérieur des intervalles habituels de chaque distribution. Ces visualisations mettent effectivement en évidence plusieurs valeurs extrêmes.
 
-Une analyse de ces observations montre toutefois qu'elles correspondent à des véhicules réels présentant des caractéristiques techniques particulières, tels que des véhicules très puissants, très lourds ou à forte consommation. Aucune valeur manifestement incohérente ou résultant d'une erreur de saisie n'a été identifiée.
+Toutefois, la présence d'une valeur extrême ne signifie pas nécessairement qu'il s'agit d'une erreur de mesure ou de saisie. Dans le contexte automobile, certaines valeurs élevées peuvent notamment s'expliquer par les caractéristiques techniques de véhicules particulièrement puissants, lourds ou à forte consommation.
 
-Dans ce contexte, le choix a été fait de conserver l'ensemble des observations. La suppression de ces véhicules aurait conduit à réduire artificiellement la variabilité du jeu de données et à écarter des situations pourtant représentatives du marché automobile.
+Les analyses réalisées ne permettent pas d'affirmer que l'ensemble de ces observations constitue des erreurs. En l'absence d'éléments suffisants pour justifier leur suppression, le choix a été fait de **conserver les valeurs atypiques** dans le jeu de données.
+
+Cette décision permet de préserver la diversité des caractéristiques techniques représentées et d'éviter une réduction artificielle de la variabilité des données. Elle n'exclut toutefois pas la possibilité que certaines observations nécessitent des vérifications complémentaires.
 
 ### Synthèse
 
-L'analyse des valeurs aberrantes montre que les observations extrêmes correspondent à des véhicules réels et non à des erreurs de mesure ou de saisie. Leur conservation permet de préserver la représentativité du jeu de données et de maintenir la variabilité nécessaire à la phase de modélisation.
+L'analyse des valeurs aberrantes a mis en évidence plusieurs observations extrêmes sur les variables quantitatives. Ces valeurs ne pouvant pas être systématiquement assimilées à des erreurs, **aucune suppression n'a été effectuée sur ce seul critère**.
+
+Leur conservation permet de maintenir la variabilité du jeu de données et de prendre en compte des profils de véhicules présentant des caractéristiques techniques moins courantes lors de la modélisation.
 
 ## 5.6 Sélection des variables
 
@@ -438,7 +459,7 @@ Après suppression de **7 doublons stricts** puis de **34 observations sans vale
 
 La **standardisation** consiste à centrer et réduire chaque variable numérique par les statistiques du jeu d'entraînement (`StandardScaler`). Elle n'a pas été appliquée indistinctement à tous les algorithmes. Les arbres de décision, Random Forest, XGBoost et LightGBM sont peu sensibles à un changement linéaire d'échelle des variables. À l'inverse, les pénalisations de Ridge et Lasso et l'optimisation d'un réseau MLP peuvent y être sensibles.
 
-Une expérimentation dédiée a comparé les performances avec et sans standardisation pour la régression linéaire, Ridge, Lasso et le MLP. Pour les recherches d'hyperparamètres Ridge/Lasso, la standardisation a été placée **dans un `Pipeline` scikit-learn**, afin d'être réajustée à l'intérieur de chaque pli de validation croisée et de ne pas utiliser les statistiques des plis de validation pendant l'entraînement. Les résultats sont détaillés en section 6.9.
+Une expérimentation dédiée a comparé les performances avec et sans standardisation pour la régression linéaire, Ridge, Lasso et le MLP. Pour ce dernier, deux réseaux de même architecture ont été entraînés avec des poids initiaux identiques, les mêmes données et les mêmes paramètres d'entraînement. La seule différence entre ces deux configurations concerne la standardisation des variables explicatives. Pour les recherches d'hyperparamètres Ridge/Lasso, la standardisation a été placée **dans un `Pipeline` scikit-learn**, afin d'être réajustée à l'intérieur de chaque pli de validation croisée et de ne pas utiliser les statistiques des plis de validation pendant l'entraînement. Les résultats sont détaillés en section 6.9.
 
 Les jeux finaux ont fait l'objet de contrôles de dimensions, de types numériques et d'absence de valeurs manquantes.
 
@@ -585,21 +606,35 @@ Les deux premiers modèles sont à égalité à quatre décimales sur le R² moy
 
 ### 6.8.2 MLP : une autre famille de modèles
 
-Le **Perceptron Multicouche** explore une approche non linéaire différente des arbres. L'architecture expérimentée comprend une couche d'entrée de **93 caractéristiques**, deux couches denses cachées de **64 et 32 neurones avec activation ReLU**, puis un neurone de sortie pour la régression, soit **8 129 paramètres**. L'apprentissage utilise l'optimiseur **Adam**, la perte **MSE**, la métrique **MAE**, **100 epochs**, des lots de **32** observations et une fraction de validation de **20 %** du jeu d'entraînement. Une graine aléatoire est fixée pour améliorer la reproductibilité.
+Le **Perceptron Multicouche (MLP)** explore une approche non linéaire différente des modèles fondés sur les arbres. L'architecture expérimentée comprend une couche d'entrée de **93 caractéristiques**, deux couches denses cachées de **64 et 32 neurones avec activation ReLU**, puis un neurone de sortie pour la régression, soit **8 129 paramètres**.
 
-Sans standardisation, le MLP obtient **MAE = 0,5863 g/km**, **RMSE = 1,5947 g/km**, **R² = 0,9978** et **MAPE = 0,0034**. Après standardisation, il atteint **MAE = 0,5726 g/km**, **RMSE = 1,3766 g/km**, **R² = 0,9984** et **MAPE = 0,0034**. Les courbes de perte d'entraînement et de validation permettent d’examiner la convergence et d’identifier un éventuel surapprentissage. Le suivi de la MSE sur les deux sous-ensembles est particulièrement utile : une baisse de la perte d’entraînement accompagnée d’une hausse durable de la perte de validation indiquerait une dégradation de la généralisation.
+L'apprentissage utilise l'optimiseur **Adam**, la fonction de perte **MSE**, la métrique **MAE**, **100 epochs**, des lots de **32 observations** et une fraction de validation de **20 %** du jeu d'entraînement. Une graine aléatoire est fixée pour améliorer la reproductibilité.
+
+Dans le notebook principal de modélisation, les variables explicatives ont été **standardisées à l'aide de `StandardScaler`** avant l'entraînement du MLP. Ce modèle obtient sur le jeu de test **MAE = 0,5863 g/km**, **RMSE = 1,5947 g/km**, **R² = 0,9978** et **MAPE = 0,0034**.
+
+Une expérimentation complémentaire, présentée en section 6.9, a été réalisée afin d'évaluer spécifiquement l'effet de la standardisation sur les performances du MLP. Deux réseaux de même architecture ont été entraînés avec des poids initiaux identiques, les mêmes jeux de données et les mêmes paramètres d'entraînement. Seule la standardisation des variables explicatives diffère entre les deux configurations.
+
+Cette comparaison contrôlée montre une amélioration importante des performances après standardisation : la **MAE passe de 9,1259 à 0,7971 g/km**, la **RMSE de 9,3855 à 1,3355 g/km** et le **R² de 0,9245 à 0,9985**.
+
+Ces résultats mettent en évidence l'intérêt de la standardisation pour le MLP dans les conditions de cette expérimentation. Ils ne remplacent toutefois pas les résultats du notebook principal, les protocoles d'entraînement et de validation n'étant pas strictement identiques entre les deux notebooks.
+
+Les courbes de perte d'entraînement et de validation permettent d'examiner la convergence et d'identifier un éventuel surapprentissage. Le suivi de la MSE sur les deux sous-ensembles est particulièrement utile : une baisse de la perte d'entraînement accompagnée d'une hausse durable de la perte de validation indiquerait une dégradation de la généralisation.
 
 ![Pertes d'entraînement et de validation du MLP standardisé](figures/mlp_perte_apprentissage.png)
 
-**Figure 12 – Évolution de la MSE du MLP standardisé sur les jeux d’entraînement et de validation.**
+**Figure 12 – Évolution de la MSE du MLP standardisé du notebook principal sur les jeux d'entraînement et de validation.**
 
 ![Zoom sur les pertes du MLP standardisé](figures/mlp_perte_zoom.png)
 
-**Figure 13 – Évolution des pertes du MLP standardisé à partir de la cinquième epoch.** Ce zoom facilite la lecture de la convergence après les premières étapes d’apprentissage.
+**Figure 13 – Évolution des pertes du MLP standardisé du notebook principal à partir de la cinquième epoch.** Ce zoom facilite la lecture de la convergence après les premières étapes d'apprentissage.
 
 ### 6.8.3 Expérimentation sans `conso_mixte`
 
-Une expérimentation dédiée a supprimé la consommation mixte afin de mesurer la dépendance des modèles à cette variable. Le nombre de variables passe de **93 à 92** et les jeux conservent **44 002 / 11 001 observations**. Quatre modèles ont été comparés :
+Une expérimentation dédiée a été réalisée en supprimant la variable `conso_mixte` afin de mesurer la dépendance des modèles à cette caractéristique, identifiée comme le principal facteur prédictif des émissions de CO₂ lors des analyses précédentes.
+
+Le nombre de variables explicatives passe ainsi de **93 à 92**, tandis que les jeux de données conservent **44 002 observations pour l'entraînement** et **11 001 pour le test**.
+
+Sept modèles de régression ont été entraînés et évalués dans cette configuration :
 
 | Modèle sans `conso_mixte` | MAE (g/km) | RMSE (g/km) | R² | MAPE |
 |---|---:|---:|---:|---:|
@@ -607,23 +642,102 @@ Une expérimentation dédiée a supprimé la consommation mixte afin de mesurer 
 | Ridge | 9,67 | 12,91 | 0,8572 | 0,0498 |
 | Lasso | 12,37 | 16,99 | 0,7526 | 0,0639 |
 | Arbre de décision | 3,19 | 5,40 | 0,9750 | 0,0173 |
+| Random Forest | 3,17 | 4,82 | 0,9801 | 0,0170 |
+| XGBoost | 3,34 | 4,82 | 0,9801 | 0,0181 |
+| LightGBM | 3,71 | 5,44 | 0,9747 | 0,0201 |
 
-L’écart avec les performances obtenues en présence de `conso_mixte` est particulièrement marqué pour les modèles linéaires. L’arbre de décision conserve un R² élevé mais moins bon que celui de l’expérience principale. Cette expérience montre l’importance de la disponibilité de `conso_mixte` dans le cas d’usage prédictif.
+Les résultats montrent une **dégradation des performances pour l'ensemble des modèles** après la suppression de `conso_mixte`. Cette diminution est particulièrement marquée pour les modèles linéaires, dont les coefficients de détermination deviennent nettement inférieurs à ceux obtenus lors de l'expérimentation principale.
+
+Les modèles fondés sur les arbres conservent néanmoins des performances élevées. **Random Forest et XGBoost obtiennent les meilleurs résultats en termes de RMSE (4,82 g/km) et de R² (0,9801)**. Random Forest présente également la MAE la plus faible (3,17 g/km).
+
+Pour XGBoost, modèle retenu dans l'étude principale, le R² passe de **0,9997 à 0,9801**, tandis que le RMSE augmente de **0,5940 à 4,82 g/km**. Malgré cette dégradation, le modèle conserve une capacité prédictive importante à partir des autres caractéristiques disponibles.
+
+Cette expérimentation confirme le rôle majeur de `conso_mixte` dans la prédiction des émissions de CO₂. Elle montre également que les autres variables techniques contiennent des informations permettant de produire des estimations pertinentes, notamment avec les méthodes d'ensemble.
+
+Elle souligne enfin l'importance de distinguer deux situations : la prédiction des émissions lorsque la consommation mixte est connue et leur estimation à partir des seules autres caractéristiques techniques du véhicule.
 
 ### 6.8.4 Target Encoding versus One-Hot Encoding
 
-Une comparaison complémentaire a évalué le **Target Encoding** des catégories, ajusté hors pli pour les observations d'entraînement afin de limiter les fuites de cible, puis appliqué au test à partir des seules données d'entraînement. Cette méthode réduit le nombre de variables explicatives de **93 à 13**, soit une réduction d'environ **86 %**. Sur les quatre modèles comparés, le **One-Hot Encoding reste meilleur** : régression linéaire (R² 0,9974 contre 0,9837), Ridge (0,9974 contre 0,9829), Lasso (0,9923 contre 0,9808) et arbre de décision (0,9991 contre 0,9986). Ces valeurs correspondent à l'expérimentation d'encodage, dont les configurations ne doivent pas être confondues avec les modèles optimisés du tableau principal. La réduction dimensionnelle est intéressante, mais ne justifie pas de remplacer systématiquement le One-Hot Encoding.
+Une expérimentation complémentaire a évalué le **Target Encoding** comme alternative au One-Hot Encoding utilisé dans la modélisation principale.
+
+Pour limiter les risques de fuite d'information, le Target Encoding a été réalisé selon une approche **out-of-fold à cinq plis** sur le jeu d'entraînement : chaque observation est encodée à partir des statistiques calculées sur les autres plis, sans utiliser directement sa propre valeur cible. Le jeu de test est ensuite transformé à l'aide d'un encodeur ajusté exclusivement sur l'ensemble du jeu d'entraînement.
+
+Cette expérimentation permet de passer de **93 variables explicatives avec le One-Hot Encoding à 13 variables avec le Target Encoding**, soit une réduction de **80 colonnes (environ 86 %)**.
+
+Les résultats obtenus sur les quatre modèles étudiés sont les suivants :
+
+| Modèle | R² One-Hot Encoding | R² Target Encoding |
+|---|---:|---:|
+| Régression linéaire | 0,9974 | 0,9837 |
+| Ridge | 0,9974 | 0,9829 |
+| Lasso | 0,9923 | 0,9808 |
+| Arbre de décision | 0,9991 | 0,9986 |
+
+Dans les configurations évaluées, le **One-Hot Encoding obtient de meilleures performances sur les quatre modèles**, avec des écarts plus marqués pour les modèles linéaires. L'arbre de décision conserve néanmoins un excellent niveau de performance avec le Target Encoding (R² de 0,9986).
+
+**Cette comparaison présente toutefois certaines limites méthodologiques.** Les pipelines de préparation ne sont pas strictement identiques : certaines variables explicatives et transformations diffèrent, notamment la standardisation appliquée aux modèles régularisés. Par conséquent, les écarts de performance observés ne peuvent pas être attribués exclusivement au choix de la méthode d'encodage.
+
+De même, la réduction du nombre de variables résulte de la configuration globale des pipelines et ne peut pas être attribuée intégralement au seul Target Encoding.
+
+Cette expérimentation montre néanmoins qu'il est possible de **réduire fortement la dimension du jeu de données tout en conservant des performances prédictives élevées**.
+
+Une comparaison plus rigoureuse, reposant sur les mêmes observations, les mêmes variables explicatives et les mêmes paramètres de modélisation, permettrait de mesurer plus précisément l'effet propre de chaque méthode d'encodage.
+
+La généralisation du Target Encoding à l'ensemble des modèles constitue ainsi une **perspective d'évolution intéressante**, à évaluer selon le compromis entre réduction de dimension, complexité du prétraitement et performances prédictives.
 
 ## 6.9 Étude spécifique de la standardisation
+Une expérimentation complémentaire a été menée afin d'étudier l'intérêt de la standardisation des variables explicatives pour différentes familles de modèles, notamment la régression linéaire, Ridge, Lasso et le MLP.
+
+La standardisation a été réalisée à l'aide de `StandardScaler`, en calculant les statistiques uniquement sur les données d'entraînement, puis en appliquant les transformations aux données de test. Pour le MLP, un découpage supplémentaire entre apprentissage et validation a été effectué afin de comparer deux réseaux dans des conditions d'entraînement identiques, sans utiliser les données de validation ou de test pour ajuster le scaler.
+
+### Modèles linéaires
+
+Les résultats obtenus avec et sans standardisation pour les modèles linéaires sont présentés ci-dessous :
 
 | Modèle | MAE sans | MAE avec | RMSE sans | RMSE avec | R² sans | R² avec |
 |---|---:|---:|---:|---:|---:|---:|
 | Régression linéaire | 1,0922 | 1,0922 | 1,7402 | 1,7402 | 0,9974 | 0,9974 |
 | Ridge optimisé | 1,0925 | 1,0925 | 1,7401 | 1,7401 | 0,9974 | 0,9974 |
 | Lasso optimisé | 1,0922 | 1,0922 | 1,7401 | 1,7401 | 0,9974 | 0,9974 |
-| MLP | 0,5863 | 0,5726 | 1,5947 | 1,3766 | 0,9978 | 0,9984 |
 
-La régression linéaire est inchangée à la précision affichée ; Ridge et Lasso optimisés conservent des scores quasi identiques. La standardisation change cependant l'échelle de la pénalisation : l'`alpha` optimal de Ridge passe de **0,0001** à **1** dans les essais. Le MLP bénéficie davantage de la standardisation, avec une diminution du RMSE de **1,5947 à 1,3766 g/km**. La MAPE du MLP reste **0,0034** à quatre décimales. Le scaling est ajusté sur le seul entraînement.
+La régression linéaire présente des performances identiques à la précision affichée, avec ou sans standardisation. Ridge et Lasso optimisés conservent également des scores pratiquement inchangés.
+
+La standardisation modifie toutefois l'échelle de la pénalisation : dans les expérimentations réalisées, l'`alpha` optimal de Ridge passe de **0,0001 à 1**.
+
+### Expérimentations complémentaires sur le MLP
+
+Afin d'évaluer spécifiquement l'effet de la standardisation sur les performances du Perceptron Multicouche (MLP), une expérimentation contrôlée a été réalisée en comparant deux configurations : l'une entraînée sur les données non standardisées et l'autre sur les données standardisées avec `StandardScaler`.
+
+Les deux modèles utilisent une **architecture identique**, composée de deux couches cachées de **64 et 32 neurones avec activation ReLU**, suivies d'un neurone de sortie pour la régression, soit **8 129 paramètres**.
+
+Pour garantir une comparaison équitable, les deux réseaux ont été initialisés avec **les mêmes poids** et entraînés avec **les mêmes paramètres** : optimiseur Adam, fonction de perte MSE, 100 epochs, batch size de 32 et désactivation du mélange des observations (`shuffle=False`).
+
+Le jeu d'entraînement initial a été divisé en **35 201 observations d'apprentissage** et **8 801 observations de validation**, avec un jeu de test indépendant de **11 001 observations**. Le `StandardScaler` a été ajusté uniquement sur les données d'apprentissage, puis appliqué aux données de validation et de test.
+
+Les performances obtenues sur le jeu de test sont les suivantes :
+
+| Configuration | MAE (g/km) | RMSE (g/km) | R² | MAPE |
+|---|---:|---:|---:|---:|
+| MLP sans standardisation | 9,1259 | 9,3855 | 0,9245 | 0,0457 |
+| MLP avec standardisation | 0,7971 | 1,3355 | 0,9985 | 0,0044 |
+
+Les résultats montrent une **amélioration importante des performances du MLP après standardisation**. La MAE diminue d'environ **91,3 %**, passant de 9,1259 à 0,7971 g/km, tandis que le RMSE diminue d'environ **85,8 %**, passant de 9,3855 à 1,3355 g/km.
+
+Le coefficient de détermination R² progresse également de **0,9245 à 0,9985**, ce qui traduit une meilleure capacité du réseau à reproduire les émissions de CO₂ observées.
+
+Cette amélioration peut être attribuée à la standardisation dans les conditions de cette expérimentation, puisque **les deux modèles partagent la même architecture, les mêmes poids initiaux, les mêmes données et les mêmes paramètres d'entraînement**.
+
+Les courbes d'apprentissage, représentées sur des échelles linéaire et logarithmique dans le notebook d'expérimentation, permettent également de comparer la convergence des deux réseaux au cours des 100 epochs.
+
+Ces résultats montrent que la standardisation facilite ici l'optimisation du MLP et améliore sensiblement sa précision prédictive. Ils confirment l'intérêt d'adapter les transformations des données aux caractéristiques des algorithmes utilisés.
+
+### Synthèse
+
+La standardisation n'a pas apporté de gain notable sur les performances de la régression linéaire, de Ridge et de Lasso optimisés dans les configurations évaluées.
+
+En revanche, **son effet est particulièrement marqué pour le MLP**. La comparaison contrôlée met en évidence une réduction d'environ **91 % de la MAE** et **86 % du RMSE**, ainsi qu'une amélioration du R² de **0,9245 à 0,9985**.
+
+Cette expérimentation souligne que **l'intérêt de la standardisation dépend de la famille de modèles considérée**. Elle apparaît déterminante pour les performances du MLP dans le protocole étudié, alors qu'elle n'améliore pas significativement les résultats des modèles linéaires évalués.
 
 # 7. Comparaison globale des modèles
 
@@ -633,13 +747,13 @@ La régression linéaire est inchangée à la précision affichée ; Ridge et La
 | Random Forest | 0,0925 | 0,7112 | 0,9996 | 0,0006 |
 | Arbre de décision | 0,1423 | 0,8176 | 0,9994 | 0,0010 |
 | LightGBM | 0,3701 | 1,2902 | 0,9986 | 0,0021 |
-| MLP sans scaling (comparaison principale) | 0,5863 | 1,5947 | 0,9978 | 0,0034 |
+| MLP standardisé (notebook principal) | 0,5863 | 1,5947 | 0,9978 | 0,0034 |
 | Lasso optimisé | 1,0922 | 1,7401 | 0,9974 | 0,0059 |
 | Ridge optimisé | 1,0925 | 1,7401 | 0,9974 | 0,0060 |
 | Régression linéaire | 1,0922 | 1,7402 | 0,9974 | 0,0059 |
 | DummyRegressor | 22,4525 | 34,1556 | ≈ 0 | 0,1298 |
 
-*Source : sortie du tableau `comparaison_modeles` du notebook de modélisation. Le MLP avec scaling (RMSE = 1,3766 g/km) relève de l'expérimentation complémentaire présentée en section 6.9.*
+*Source : sortie du tableau `comparaison_modeles` du notebook principal de modélisation. Les résultats de la comparaison contrôlée du MLP avec et sans standardisation sont présentés séparément en section 6.9 et ne sont pas intégrés à ce tableau.*
 
 Tous les modèles supervisés surpassent largement le DummyRegressor. **XGBoost** obtient le meilleur R² et le meilleur RMSE, tandis que **Random Forest** minimise la MAE et la MAPE. La comparaison montre l'importance de ne pas désigner un « meilleur modèle » sans préciser le critère retenu. XGBoost est conservé comme modèle principal lorsque la réduction des erreurs importantes (RMSE) est privilégiée.
 
@@ -671,7 +785,7 @@ Cette hiérarchie est cohérente avec les résultats de l'analyse exploratoire, 
 
 L'étude progressive des familles de modèles met en évidence l'intérêt des relations non linéaires et des ensembles d'arbres pour ce jeu de données. Les modèles linéaires expliquent déjà près de 99,74 % de la variance des émissions. L'arbre de décision améliore nettement les performances ; le bagging de Random Forest réduit encore les erreurs ; le boosting XGBoost obtient le meilleur RMSE (**0,5940 g/km**) et le meilleur R² (**0,9997**).
 
-L'étude du MLP et de la standardisation montre que les transformations de données doivent être adaptées à la famille d'algorithmes. Le Target Encoding réduit la dimension sans améliorer les scores observés, et la suppression de `conso_mixte` révèle une dépendance importante du modèle à cette caractéristique. Les très hauts scores doivent donc être interprétés à la lumière des variables disponibles au moment de l'usage réel.
+L'étude du MLP et de la standardisation montre que les transformations de données doivent être adaptées à la famille d'algorithmes. La comparaison contrôlée avec et sans standardisation met en évidence une amélioration importante des performances du MLP, tandis que les modèles linéaires optimisés présentent des résultats pratiquement inchangés. Le Target Encoding réduit la dimension sans améliorer les scores observés, et la suppression de `conso_mixte` révèle une dépendance importante du modèle à cette caractéristique. Les très hauts scores doivent donc être interprétés à la lumière des variables disponibles au moment de l'usage réel.
 
 # 10. Difficultés rencontrées et limites
 
@@ -685,7 +799,7 @@ L'étude du MLP et de la standardisation montre que les transformations de donn�
 
 Ce projet a couvert l'analyse exploratoire, le contrôle de qualité et des doublons, le prétraitement sans utilisation des statistiques du jeu de test, la modélisation et l'interprétation des émissions de CO₂ des véhicules commercialisés en France en 2014. Après suppression de **7 doublons stricts**, les données ont été préparées pour une modélisation sur **44 002 observations d'entraînement**, **11 001 de test** et **93 variables explicatives**.
 
-Les familles linéaires, les arbres, le bagging, le boosting et le MLP ont été comparés. **XGBoost** constitue le modèle principal avec **R² = 0,9997** et **RMSE = 0,5940 g/km** sur le test ; **Random Forest** se distingue par une **MAE = 0,0925 g/km**. L'analyse SHAP confirme la prédominance de la consommation mixte dans les prédictions. L'expérimentation sans cette variable nuance la portée opérationnelle de ces performances. Les essais de Target Encoding et de standardisation complètent les choix de préparation des données et montrent qu'aucune transformation n'est systématiquement optimale.
+Les familles linéaires, les arbres, le bagging, le boosting et le MLP ont été comparés. **XGBoost** constitue le modèle principal avec **R² = 0,9997** et **RMSE = 0,5940 g/km** sur le test ; **Random Forest** se distingue par une **MAE = 0,0925 g/km**. L'analyse SHAP confirme la prédominance de la consommation mixte dans les prédictions. L'expérimentation sans cette variable nuance la portée opérationnelle de ces performances. Les essais de Target Encoding ont permis d'étudier la réduction de la dimension des données, tandis que l'expérimentation contrôlée sur la standardisation a mis en évidence une amélioration importante des performances du MLP, sans gain notable pour les modèles linéaires évalués.
 
 Ce travail illustre l’intérêt d’une démarche comparative associant préparation rigoureuse des données, évaluation des modèles et interprétation des prédictions. Il montre également l’importance de définir les variables disponibles au moment de l’utilisation du modèle.
 
@@ -701,7 +815,7 @@ L'expérimentation sans `conso_mixte` doit être prolongée pour mesurer la capa
 
 ## 12.3 Améliorer le MLP et l'optimisation
 
-Le MLP standardisé a progressé, mais demeure derrière les meilleures méthodes d'ensemble sur le RMSE. Des essais contrôlés avec `EarlyStopping`, `Dropout`, différentes architectures ou optimisation bayésienne pourraient être envisagés, en conservant un protocole comparable et un budget de calcul explicite.
+L'expérimentation contrôlée a confirmé l'intérêt de la standardisation pour le MLP, avec une amélioration importante des performances prédictives. Toutefois, le MLP standardisé du notebook principal demeure derrière les meilleures méthodes d'ensemble sur le RMSE. Des essais contrôlés avec `EarlyStopping`, `Dropout`, différentes architectures ou optimisation bayésienne pourraient être envisagés, en conservant un protocole comparable et un budget de calcul explicite.
 
 ## 12.4 Tester la généralisation temporelle et la reproductibilité
 
