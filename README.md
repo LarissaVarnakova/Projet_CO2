@@ -1,48 +1,70 @@
-Prédiction des émissions de CO₂ des véhicules commercialisés en France
+# Prédiction des émissions de CO₂ des véhicules commercialisés en France
 
-1. Présentation du projet
+## Sommaire
+
+- [ 1. Présentation du projet](#1-présentation-du-projet) 
+- [ 2. Organisation du dépôt Git](#2-organisation-du-dépôt-git) 
+- [ 3. Installation de l'environnement](#3-installation-de-lenvironnement) 
+- [ 4. Notebooks du projet](#4-notebooks-du-projet) 
+- [ 5. Modèles étudiés](#5-modèles-étudiés) 
+- [ 6. Application Streamlit](#6-application-streamlit) 
+- [ 7. Vérification de la reproductibilité](#7-vérification-de-la-reproductibilité) 
+- [ 8. Rapport et documentation](#8-rapport-et-documentation) 
+- [ 9. Auteurs](#9-auteurs) 
+
+
+## 1. Présentation du projet
 
 Ce projet a été réalisé dans le cadre de la formation Data Scientist – Liora (anciennement DataScientest).
 
 L'objectif est d'analyser les caractéristiques techniques et environnementales des véhicules commercialisés en France en 2014, puis de construire des modèles de régression capables de prédire leurs émissions de CO₂, exprimées en g/km.
 
-Équipe projet :
+### 1.2. Équipe projet :
 
-Larissa Varnakova
+- **Larissa Varnakova**
+- **Aziz Diallo**
+- **Mentor : Nicolas Mormiche**
 
-Aziz Diallo
+### 1.3. Vue d'ensemble de pipeline methodologique du projet
+- **1. Collecte des données :**  
+    - Source - ADEME / data.gouv.fr — véhicules commercialisés en France en 2014 [co2_2014.csv](data/co2_2014.csv)  contenant 55 044 observations et 30 variables.
+- **2. Nettoyage initial :**  
+    - Suppression de 7 doublons strics, des 34 lignes sans cible CO₂ et des colonnes inutilisables;  
+    - 55 003 observations conservées.  
+- **3. Analyse exploratoire (EDA) :**  
+    - Qualité des données, distributions, visualisations, corrélations et tests statistiques;  
+    - Identification des variables associées aux émissions de CO₂.  
+- **4. Séparation des données :**  
+    - Train : 44 002 observations ;  
+    - Test : 11 001 observations  ;  
+    - Proportions 80 % / 20 % — avant imputation et encodage.
+- **5. Prétraitement et feature engineering :**  
+    - Imputation des valeurs manquantes;  
+    - Analyse des valeurs extrêmes;  
+    - Sélection des variables et encodage `One-Hot`;
+    - Transformations ajustées sur Train - [X_train_final.csv](data/X_train_final.csv), puis appliquées à Test - [X_test_final.csv](data/X_test_final.csv). 
+- **6. Modélisation supervisée :** <a id="modeles"></a>
+    - DummyRegressor;  
+    - Régressions linéaires;  
+    - Ridge et Lasso;  
+    - Arbres de décision;  
+    - Random Forest;  
+    - XGBoost;  
+    - LightGBM;  
+    - MLP.
+- **7. Évaluation et comparaison :**
+    - MAE · RMSE · R² · MAPE;  
+    - Validation croisée, recherche d'hyperparamètres et analyse des erreurs.
+- **8. Modèle de référence : XGBoost**
+    - R² = 0,9997 · RMSE = 0,5940 g/km sur le jeu de test.
+- **9. Interprétabilité et conclusion :**
+    - Analyse SHAP, identification des variables influentes et discussion des limites du modèle.
 
-Mentor : Nicolas Mormiche
 
-Le projet couvre l'analyse exploratoire des données, leur préparation, l'entraînement et la comparaison de plusieurs modèles de Machine Learning, ainsi que le développement d'une application Streamlit permettant d'effectuer des prédictions.
 
-2. Données utilisées
+## 2. Organisation du dépôt Git
 
-Le fichier initial co2_2014.csv contient 55 044 observations et 30 variables.
-
-Après suppression de 7 doublons stricts et de 34 observations sans valeur cible co2, le jeu de données utilisé pour la modélisation comprend 55 003 observations.
-
-La répartition est la suivante :
-
-Jeu de données
-
-Observations
-
-Entraînement
-
-44 002
-
-Test
-
-11 001
-
-Les données sont préparées à partir des caractéristiques des véhicules : marque, motorisation, carburant, puissance, consommation, masse, carrosserie, gamme et boîte de vitesses.
-
-Le prétraitement comprend notamment le traitement des valeurs manquantes, la création de variables, la sélection des caractéristiques et l'encodage des variables catégorielles.
-
-Le jeu de données final comporte 93 variables explicatives après encodage.
-
-3. Organisation du dépôt
+```text
 
 Projet_CO2/
 │
@@ -77,155 +99,132 @@ Projet_CO2/
 ├── requirements.txt
 ├── README.md
 └── .gitignore
+````
 
-Le dossier data/ contient les données initiales et les jeux préparés. Le dossier models/ regroupe les objets nécessaires à la prédiction. Les notebooks retracent les différentes étapes de l'analyse et de la modélisation.
+Le dossier `data/` contient les données initiales et les jeux préparés.  
+Le dossier `models/` regroupe les objets nécessaires à la prédiction.  
+Les `notebooks` retracent les différentes étapes de l'analyse et de la modélisation.  
+Le dossier `reports/` contient le rapport du projet et les figures utilisées pour présenter les résultats.  
 
-Le dossier reports/ contient le rapport du projet et les figures utilisées pour présenter les résultats.
+## 3. Installation de l'environnement
 
-4. Installation de l'environnement
+### 3.1. Prérequis
 
-Prérequis
+- `Python 3.12.3` - [Télécharger sur le site officiel de Python](https://www.python.org/downloads/release/python-3123/?utm_source=chatgpt.com)
+- `Git` - [Télécharger Git](https://git-scm.com/downloads?utm_source=chatgpt.com)
+- `Terminal` - déjà intégré à macOS et Linux. Sous Windows, utiliser PowerShell ou Windows Terminal.
+- un environnement permettant d'exécuter des notebooks Jupyter, au choix:
+    - `Visual Studio Code` - [Téléchargement officiel](https://code.visualstudio.com/download?utm_source=chatgpt.com). Il faudra ensuite installer les extensions Python et Jupyter.
+    - `Anaconda Distribution` - [Téléchargement officiel](https://www.anaconda.com/download?utm_source=chatgpt.com). Cette distribution comprend Python, Jupyter Notebook, JupyterLab et des outils de gestion des environnements.
 
-Python 3.12
 
-Git
+### 3.2 Installation 
 
-Un terminal
 
-Un environnement permettant d'exécuter des notebooks Jupyter
+**3.2.1. Cloner le projet depuis Git**
+- Creer un dossier vide sur son poste
+- Ouvrir un terminal depuis ce dossier et recuperer le projet depuis Git :
+ 
+```bash
+git clone --branch main https://github.com/LarissaVarnakova/Projet_CO2.git .
+```
+**3.2.2. Ouverture dans Visual Studio Code**
+- Ouvrir Visual Studio Code:  
+    - Sous macOS dans terminal / Windows dans Power Shell :   
+    ```bash
+    code .
+    ``` 
+- Sélectionner **Fichier → Ouvrir le dossier** et choisir le dossier contenant le projet cloné.  
+- Ouvrir un terminal intégré dans VSCode: **Terminal → Nouveau terminal**.
 
-L'installation a été testée sous Linux avec Python 3.12.3.
+**3.2.3. Configurer l'environnement virtuel du projet `venv_CO2`**
+- Dans le terminal intégré de VS Code, exécuter les commandes suivantes :  
+```bash
+python3 --version
+python3.12 -m venv .venv_CO2
+```
+- Activer l'environnement virtuel:  
+    - sur macOS/Linux :  
+    ```bash
+    source .venv_CO2/bin/activate
+    ```
+    - Sur Windows (PowerShell) :  
+    ```bash
+    .venv_CO2\Scripts\Activate.ps1
+    ```
+    - Sur Windows (Invite de commandes / CMD) :  
+    ```bash
+    .venv_CO2\Scripts\activate.bat
+    ```
+Une fois l’environnement activé, le nom (.venv_CO2) apparaît généralement au début de la ligne de commande dans terminal de VSCode.  
 
-Récupérer le projet
+**3.2.4. Installation des dependances**  
 
-git clone --branch aziz-eda https://github.com/LarissaVarnakova/Projet_CO2.git
-cd Projet_CO2
+- Mettre à jour pip, puis installer les bibliothèques nécessaires au projet :  
+    ```bash
+    python -m pip install --upgrade pip
+    python -m pip install -r requirements.txt
+    ```   
+- vérifier la cohérence des dépendances installées :  
+    ```bash
+    python -m pip check
+    ```  
 
-Créer un environnement virtuel
+**3.2.5. Sélection de l’interpréteur Python dans VS Code**  
 
-Sous Linux :
+- Ouvrir la palette de commandes : `Cmd + Shift + P` sur macOS ou `Ctrl + Shift + P` sur Windows.  
+- Rechercher *Python* 
+- Sélectionner l’interpréteur de l’environnement `.venv_CO2` :  
+    
+    - macOS / Linux : `.venv_CO2/bin/`;  
+    
+    - Windows : `.venv_CO2\Scripts\python.exe`.  
 
-python3 -m venv venv
-source venv/bin/activate
+*Si l’interpréteur n’apparaît pas dans la liste, sélectionner manuellement le chemin correspondant.*
 
-Sous Windows (PowerShell) :
+Arrivé à ce stade, vous pouvez passer à l'execution des notebooks.
 
-python -m venv venv
-.\venv\Scripts\Activate.ps1
 
-Installer les dépendances
+## 4. Notebooks du projet
 
-python -m pip install -r requirements.txt
-
-Pour vérifier la cohérence des dépendances installées :
-
-python -m pip check
-
-Le fichier requirements.txt contient les bibliothèques nécessaires à l'analyse, à la modélisation et à l'application, notamment pandas, NumPy, scikit-learn, XGBoost, LightGBM, TensorFlow, SHAP et Streamlit.
-
-5. Notebooks du projet
-
-Les notebooks se trouvent dans le dossier notebooks/.
-
+Les notebooks se trouvent dans le dossier `notebooks/`.  
 Ils sont organisés selon les différentes étapes du projet :
 
-Notebook
+- Analyse exploratoire, distributions, corrélations et tests statistiques - [eda.ipynb](notebooks/eda.ipynb) 
+- Nettoyage, imputation, création de variables, encodage et préparation des jeux de données - [preprocessing.ipynb](notebooks/preprocessing.ipynb) 
+- Entraînement, optimisation et comparaison des modèles de régression - [modelisation.ipynb](notebooks/modelisation.ipynb) 
+- Étude de l'effet de la standardisation sur certains modèles - [experimentation_scaling.ipynb](notebooks/experimentation_scaling.ipynb)  
+- Expérimentation d'un encodage alternatif des variables catégorielles - [modelisation_target_encoding.ipynb](notebooks/modelisation_target_encoding.ipynb) 
+- Étude des performances sans la variable conso_mixte - [experience_sans_conso_mixte.ipynb](notebooks/experience_sans_conso_mixte.ipynb)  
+- Exploration des modèles avec LazyPredict - [lazypredict.ipynb](notebooks/lazypredict.ipynb)
 
-Contenu
+Ordre de lecture conseillé :  
+- eda.ipynb
+- preprocessing.ipynb
+- modelisation.ipynb 
+- les trois notebooks d'expérimentation, selon l'analyse souhaitée 
+- exploration automatique avecLazyPredict. 
 
-eda.ipynb
 
-Analyse exploratoire, distributions, corrélations et tests statistiques
+Les notebooks utilisent principalement des chemins relatifs vers les dossiers `data/` et `models/`.
 
-preprocessing.ipynb
-
-Nettoyage, imputation, création de variables, encodage et préparation des jeux de données
-
-modelisation.ipynb
-
-Entraînement, optimisation et comparaison des modèles de régression
-
-experimentation_scaling.ipynb
-
-Étude de l'effet de la standardisation sur certains modèles
-
-modelisation_target_encoding.ipynb
-
-Expérimentation d'un encodage alternatif des variables catégorielles
-
-experience_sans_conso_mixte.ipynb
-
-Étude des performances sans la variable conso_mixte
-
-Ordre de lecture conseillé
-
-eda.ipynb
-
-preprocessing.ipynb
-
-modelisation.ipynb
-
-Les trois notebooks d'expérimentation, selon l'analyse souhaitée.
-
-Les notebooks utilisent principalement des chemins relatifs vers les dossiers data/ et models/.
-
-Important : pour que les chemins de type ../data/ fonctionnent, les notebooks doivent être exécutés avec le dossier notebooks/ comme répertoire de travail.
+**Important : pour que les chemins de type `../data/` fonctionnent, les notebooks doivent être exécutés avec le dossier `notebooks/` comme répertoire de travail.**
 
 Les fichiers de données préparées et les modèles sauvegardés sont également fournis dans le dépôt. Il n'est donc pas nécessaire de relancer tous les entraînements pour utiliser l'application Streamlit.
 
-6. Modèles étudiés
+## 5. Modèles étudiés
 
-Plusieurs approches de régression ont été comparées :
+Plusieurs approches de régression ont été comparées - voir [Modelisation supervisée](#modeles).
 
-Dummy Regressor, comme modèle de référence ;
-
-Régression linéaire, Ridge et Lasso ;
-
-Arbre de décision ;
-
-Random Forest ;
-
-XGBoost ;
-
-LightGBM ;
-
-Réseau de neurones multicouche (MLP).
-
-Les performances sont évaluées à l'aide des métriques MAE, RMSE, R² et MAPE.
+Les performances ont été évaluées à l'aide des métriques MAE, RMSE, R² et MAPE.
 
 Principaux résultats
 
-Modèle
-
-MAE (g/km)
-
-RMSE (g/km)
-
-R²
-
-XGBoost
-
-0,2908
-
-0,5940
-
-0,9997
-
-Random Forest
-
-0,0925
-
-0,7112
-
-0,9996
-
-LightGBM
-
-0,3701
-
-1,2902
-
-0,9986
+| Modèle        | MAE    | RMSE   | R²     |
+|---------------|------:|-------:|-------:|
+| LightGBM      | 0,3701 | 1,2902 | 0,9986 |
+| Random Forest | 0,0925 | 0,7112 | 0,9996 |
+| XGBoost       | 0,2908 | 0,5940 | 0,9997 |
 
 XGBoost a été retenu pour l'application Streamlit en raison de ses performances globales, notamment sur la RMSE.
 
@@ -233,102 +232,75 @@ Random Forest obtient toutefois la meilleure MAE parmi les modèles comparés.
 
 Ces résultats sont détaillés dans le rapport du projet.
 
-7. Application Streamlit
+## 6. Application Streamlit
 
-Une application Streamlit permet d'estimer les émissions de CO₂ d'un véhicule à partir de ses caractéristiques techniques.
+Une application Streamlit permet d'estimer les émissions de CO₂ d'un véhicule à partir de ses caractéristiques techniques choisies.
 
 Elle utilise :
 
-models/preprocessing_co2.joblib pour les paramètres de prétraitement et l'encodage ;
+- `models/preprocessing_co2.joblib` pour les paramètres de prétraitement et l'encodage ;
 
-models/xgboost_co2.json pour le modèle XGBoost entraîné.
+- `models/xgboost_co2.json` pour le modèle XGBoost entraîné.
 
-Lancer l'application
+**6.1 Comment lancer l'application Streamlit** 
 
-Depuis la racine du projet, avec l'environnement virtuel activé :
-
+Depuis la racine du projet, avec l'environnement virtuel activé :  
+```bash
 python -m streamlit run app.py
-
-L'application est généralement accessible à l'adresse :
-
-http://localhost:8501
+```
+L'application est généralement accessible à l'adresse : [streamlit](http://localhost:8501)
 
 L'utilisateur renseigne les caractéristiques du véhicule, puis lance la prédiction.
-
 Le résultat est affiché en grammes de CO₂ par kilomètre (g/km).
 
-8. Vérification de la reproductibilité
+## 7. Vérification de la reproductibilité
 
-Un test de reproductibilité a été réalisé sur un serveur Linux, à partir d'un nouveau clonage de la branche aziz-eda.
+Un test de reproductibilité a été réalisé sur un poste avec macOS.
 
 Les vérifications suivantes ont été effectuées avec succès :
 
-Clonage du dépôt depuis GitHub ;
-
-Création d'un environnement virtuel indépendant avec Python 3.12.3 ;
-
-Installation des dépendances depuis requirements.txt ;
-
-Vérification des dépendances avec pip check ;
-
-Importation des principales bibliothèques Python ;
-
-Chargement du prétraitement et du modèle XGBoost sauvegardés ;
-
-Vérification des 93 variables attendues par le modèle ;
-
-Prédictions sur les 11 001 observations du jeu de test ;
-
-Démarrage de l'application Streamlit ;
-
-Réalisation d'une prédiction depuis l'interface.
+- Clonage du dépôt depuis GitHub ;  
+- Création d'un environnement virtuel indépendant avec Python 3.12.3 ;  
+- Installation des dépendances depuis requirements.txt ;  
+- Vérification des dépendances avec pip check ;  
+- Importation des principales bibliothèques Python ;  
+- Chargement du prétraitement et du modèle XGBoost sauvegardés ;  
+- Vérification des 93 variables attendues par le modèle ;  
+- Prédictions sur les 11 001 observations du jeu de test ;  
+- Démarrage de l'application Streamlit ;  
+- Réalisation d'une prédiction depuis l'interface.
 
 Les performances obtenues après rechargement du modèle XGBoost sont :
 
-Métrique
+| Métrique | Résultat |
+|----------|---------:|
+| MAE      | 0,2908   |
+| RMSE     | 0,5940   |
+| R²       | 0,9997   |
 
-Résultat
-
-MAE
-
-0,2908
-
-RMSE
-
-0,5940
-
-R²
-
-0,9997
 
 Ces résultats correspondent à ceux présentés dans le rapport.
+**Périmètre de validation :** ces tests confirment la reconstruction de l'environnement, le fonctionnement du modèle sauvegardé et l'utilisation de l'application. Ils ne constituent pas encore une validation de l'exécution intégrale de tous les notebooks depuis leur première cellule.
 
-Périmètre de validation : ces tests confirment la reconstruction de l'environnement, le fonctionnement du modèle sauvegardé et l'utilisation de l'application. Ils ne constituent pas encore une validation de l'exécution intégrale de tous les notebooks depuis leur première cellule.
+## 8. Rapport et documentation
 
-9. Rapport et documentation
-
-Le rapport principal est disponible dans le dossier reports/, au format Markdown et PDF.
+Le rapport principal est disponible dans le dossier `reports/`, au format Markdown et PDF.
 
 Il présente :
 
-Le contexte et les objectifs du projet ;
+- Le contexte et les objectifs du projet ;
+- L'analyse exploratoire et les résultats statistiques ;
+- Les choix de prétraitement ;
+- La méthodologie de modélisation ;
+- La comparaison et l'interprétation des performances ;
+- Les limites et les perspectives d'évolution.
+- Les graphiques associés sont regroupés dans reports/figures/.
 
-L'analyse exploratoire et les résultats statistiques ;
-
-Les choix de prétraitement ;
-
-La méthodologie de modélisation ;
-
-La comparaison et l'interprétation des performances ;
-
-Les limites et les perspectives d'évolution.
-
-Les graphiques associés sont regroupés dans reports/figures/.
-
-10. Auteurs
+## 9. Auteurs
 
 Larissa Varnakova et Aziz Diallo
 
 Projet réalisé dans le cadre de la formation Data Scientist – Liora (anciennement DataScientest), sous l'accompagnement de Nicolas Mormiche.
 
 Octobre 2026.
+
