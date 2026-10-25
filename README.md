@@ -25,11 +25,11 @@ L'objectif est d'analyser les caractéristiques techniques et environnementales 
 - **Aziz Diallo**
 - **Mentor : Nicolas Mormiche**
 
-### 1.3. Vue d'ensemble de pipeline methodologique du projet
+### 1.3. Vue d'ensemble de pipeline méthodologique du projet
 - **1. Collecte des données :**  
     - Source - ADEME / data.gouv.fr — véhicules commercialisés en France en 2014 [co2_2014.csv](data/co2_2014.csv)  contenant 55 044 observations et 30 variables.
 - **2. Nettoyage initial :**  
-    - Suppression de 7 doublons strics, des 34 lignes sans cible CO₂ et des colonnes inutilisables;  
+    - Suppression de 7 doublons stricts, des 34 lignes sans cible CO₂ et des colonnes inutilisables;  
     - 55 003 observations conservées.  
 - **3. Analyse exploratoire (EDA) :**  
     - Qualité des données, distributions, visualisations, corrélations et tests statistiques;  
@@ -110,39 +110,56 @@ Le dossier `reports/` contient le rapport du projet et les figures utilisées po
 
 ### 3.1. Prérequis
 
-- `Python 3.12.3` - [Télécharger sur le site officiel de Python](https://www.python.org/downloads/release/python-3123/?utm_source=chatgpt.com)
-- `Git` - [Télécharger Git](https://git-scm.com/downloads?utm_source=chatgpt.com)
+- `Python 3.12.10` - [Télécharger sur le site officiel de Python](https://www.python.org/downloads/release/python-31210/). 
+    - aller jusqu'à la section **Files** 
+    - choisir l'installateur en fonction de votre système d'exploitation 
+
+- `Git` - [Télécharger Git](https://git-scm.com/downloads)
 - `Terminal` - déjà intégré à macOS et Linux. Sous Windows, utiliser PowerShell ou Windows Terminal.
 - un environnement permettant d'exécuter des notebooks Jupyter, au choix:
-    - `Visual Studio Code` - [Téléchargement officiel](https://code.visualstudio.com/download?utm_source=chatgpt.com). Il faudra ensuite installer les extensions Python et Jupyter.
-    - `Anaconda Distribution` - [Téléchargement officiel](https://www.anaconda.com/download?utm_source=chatgpt.com). Cette distribution comprend Python, Jupyter Notebook, JupyterLab et des outils de gestion des environnements.
+    - `Visual Studio Code` - [Téléchargement officiel](https://code.visualstudio.com/download). Il faudra ensuite installer les extensions Python et Jupyter.
+    - `Anaconda Distribution` - [Téléchargement officiel](https://www.anaconda.com/download). Cette distribution comprend Python, Jupyter Notebook, JupyterLab et des outils de gestion des environnements.
 
 
 ### 3.2 Installation 
 
 
 **3.2.1. Cloner le projet depuis Git**
-- Creer un dossier vide sur son poste
-- Ouvrir un terminal depuis ce dossier et recuperer le projet depuis Git :
+
+- Ouvrir un terminal depuis l'endroit souhaité et récupérer le projet depuis Git :
  
 ```bash
-git clone --branch main https://github.com/LarissaVarnakova/Projet_CO2.git .
+git clone --branch main https://github.com/LarissaVarnakova/Projet_CO2.git
 ```
 **3.2.2. Ouverture dans Visual Studio Code**
 - Ouvrir Visual Studio Code:  
-    - Sous macOS dans terminal / Windows dans Power Shell :   
+    - Sous macOS dans terminal :   
     ```bash
     code .
     ``` 
-- Sélectionner **Fichier → Ouvrir le dossier** et choisir le dossier contenant le projet cloné.  
+    - Sous Windows dans Power Shell :  
+    ```bash
+    cd Projet_CO2
+    code .
+    ````
+
+- Si vous preferez lancez VSCode depuis L'environnement Windows,séléctionnez **Fichier → Ouvrir le dossier** et choisissez le dossier contenant le projet cloné.  
 - Ouvrir un terminal intégré dans VSCode: **Terminal → Nouveau terminal**.
 
 **3.2.3. Configurer l'environnement virtuel du projet `venv_CO2`**
 - Dans le terminal intégré de VS Code, exécuter les commandes suivantes :  
 ```bash
 python3 --version
-python3.12 -m venv .venv_CO2
-```
+``` 
+Verifier que la version est bien 3.12.XX sinon revenez sur l’étape d'installation de Python et installez la bonne version ( 3.12.10). 
+- Pour macOS/Linux :
+```bash 
+python3.12 -m venv .venv_CO2 
+``` 
+- pour Windows :
+```bash 
+py 3.12 -m venv .venv_CO2 
+``` 
 - Activer l'environnement virtuel:  
     - sur macOS/Linux :  
     ```bash
@@ -158,7 +175,7 @@ python3.12 -m venv .venv_CO2
     ```
 Une fois l’environnement activé, le nom (.venv_CO2) apparaît généralement au début de la ligne de commande dans terminal de VSCode.  
 
-**3.2.4. Installation des dependances**  
+**3.2.4. Installation des dépendances**  
 
 - Mettre à jour pip, puis installer les bibliothèques nécessaires au projet :  
     ```bash
@@ -170,8 +187,14 @@ Une fois l’environnement activé, le nom (.venv_CO2) apparaît généralement 
     python -m pip check
     ```  
 
-**3.2.5. Sélection de l’interpréteur Python dans VS Code**  
+**3.2.5. Installation des extensions**  
 
+Cliquer sur l’icône **Extensions** dans la barre latérale gauche ( ou appuyer sur `Ctrl + Shift + X`):  
+- Installer l’extension `Python`, publiée par `Microsoft`;  
+- Installer l’extension `Jupyter`.  
+  
+    
+**3.2.6. Sélection de l’interpréteur Python dans VS Code** 
 - Ouvrir la palette de commandes : `Cmd + Shift + P` sur macOS ou `Ctrl + Shift + P` sur Windows.  
 - Rechercher *Python* 
 - Sélectionner l’interpréteur de l’environnement `.venv_CO2` :  
@@ -214,7 +237,7 @@ Les fichiers de données préparées et les modèles sauvegardés sont égalemen
 
 ## 5. Modèles étudiés
 
-Plusieurs approches de régression ont été comparées - voir [Modelisation supervisée](#modeles).
+Plusieurs approches de régression ont été comparées - voir [Modélisation supervisée](#modeles).
 
 Les performances ont été évaluées à l'aide des métriques MAE, RMSE, R² et MAPE.
 
@@ -303,4 +326,3 @@ Larissa Varnakova et Aziz Diallo
 Projet réalisé dans le cadre de la formation Data Scientist – Liora (anciennement DataScientest), sous l'accompagnement de Nicolas Mormiche.
 
 Octobre 2026.
-
