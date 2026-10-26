@@ -16,20 +16,6 @@
 
 ---
 
-# Résumé
-
-Ce projet de Data Science porte sur l’analyse et la prédiction des émissions de CO₂ des véhicules commercialisés en France à partir de leurs caractéristiques techniques et environnementales. Le jeu de données brut regroupe 55 044 observations et 30 variables ; après suppression de 7 doublons stricts puis de 34 observations sans valeur cible `co2`, 55 003 observations sont conservées pour la modélisation, relatives notamment à la motorisation, à la puissance, à la masse, à la consommation de carburant et aux émissions de polluants.
-
-Une première phase d’analyse exploratoire a permis d’évaluer la qualité des données, d’étudier les distributions et d’identifier les principales relations entre les variables. Les analyses graphiques et statistiques mettent notamment en évidence une forte association entre les émissions de CO₂ et la consommation de carburant, ainsi que l’influence de plusieurs caractéristiques telles que la masse, le type de carburant, la carrosserie, la gamme et l’hybridation.
-
-Le prétraitement a ensuite consisté à nettoyer les données, traiter les valeurs manquantes, évaluer des variables dérivées, analyser les valeurs aberrantes, sélectionner les variables pertinentes et encoder les variables catégorielles. Une attention particulière a été portée à la prévention des fuites d’information, notamment en réalisant la séparation entre les jeux d’entraînement et de test avant les opérations d’imputation et d’encodage.
-
-Ces étapes ont permis d’obtenir des jeux de données cohérents, complets et exploitables pour la phase de modélisation. Plusieurs modèles de régression ont ensuite été entraînés et comparés. XGBoost est retenu comme modèle de référence avec un **R² de 0,9997** et un **RMSE de 0,5940 g/km** sur le jeu de test. La validation croisée confirme la stabilité de ses performances.
-
-Enfin, l’analyse SHAP met en évidence le rôle prépondérant de la consommation mixte dans les prédictions du modèle, devant les autres caractéristiques techniques et certaines informations liées au carburant. Ces résultats prolongent les constats issus de l’analyse exploratoire et permettent de répondre aux deux dimensions de la problématique : identifier les principaux facteurs associés aux émissions de CO₂ et construire un modèle capable de les prédire.
-
----
-
 # Sommaire
 
 1. Introduction
@@ -809,9 +795,17 @@ Ce travail illustre l’intérêt d’une démarche comparative associant prépa
 
 Le Target Encoding a réduit les variables de **93 à 13**, mais les quatre modèles testés ont obtenu des performances inférieures à celles du One-Hot Encoding. La perspective n'est donc plus de le généraliser d'emblée, mais d'étudier ses compromis entre dimension, temps de calcul, stabilité et précision, éventuellement sur d'autres algorithmes, avec un encodage hors pli pour prévenir les fuites de cible.
 
-## 12.2 Évaluer la prédiction sans consommation mixte
+## 12.2 Développer un modèle de prédiction pour les véhicules non encore commercialisés
 
-L'expérimentation sans `conso_mixte` doit être prolongée pour mesurer la capacité du modèle à prédire à partir des seules caractéristiques disponibles avant homologation ou mesure de consommation. Cette distinction entre prédiction avec et sans consommation connue est essentielle pour préciser le cas d'usage métier.
+Une perspective d'évolution du projet consisterait à développer un modèle capable d'estimer les émissions de CO₂ de véhicules qui ne sont pas encore commercialisés, à partir de leurs caractéristiques techniques disponibles en phase de conception.
+
+Contrairement au modèle principal, qui utilise notamment la consommation mixte de carburant (`conso_mixte`), cette approche pourrait s'appuyer sur des variables connues en amont, telles que la puissance du moteur, la masse du véhicule, le type de carburant ou encore l'hybridation.
+
+L'expérimentation réalisée sans `conso_mixte` constitue une première étape dans cette direction. Les modèles Random Forest et XGBoost conservent un **R² de 0,9801** et un **RMSE de 4,82 g/km** sur le jeu de test, ce qui montre le potentiel prédictif des autres caractéristiques techniques.
+
+Cette évolution pourrait permettre d'estimer les émissions de CO₂ de nouveaux véhicules avant leur commercialisation et d'accompagner la comparaison de différentes configurations techniques.
+
+Toutefois, sa mise en œuvre nécessiterait de vérifier quelles variables sont réellement disponibles au moment de la prédiction et d'évaluer la capacité du modèle à généraliser ses résultats à de nouveaux véhicules, notamment à partir de données plus récentes.
 
 ## 12.3 Améliorer le MLP et l'optimisation
 
@@ -820,6 +814,18 @@ L'expérimentation contrôlée a confirmé l'intérêt de la standardisation pou
 ## 12.4 Tester la généralisation temporelle et la reproductibilité
 
 Une validation sur une autre année, sous réserve d'harmoniser les schémas de données, permettrait de mieux mesurer la robustesse hors échantillon. La documentation du pipeline et de son environnement constitue également un axe d’amélioration pour faciliter la réutilisation et le partage des travaux.
+
+## 12.5 Approfondir l'analyse des doublons et leur influence sur la modélisation
+
+L'analyse des doublons a permis d'identifier **7 doublons stricts**, supprimés lors du nettoyage, ainsi que **4 388 groupes de véhicules présentant des caractéristiques identiques** après exclusion des variables `cnit` et `tvv`.
+
+Ces observations ont été conservées, car les informations disponibles ne permettent pas d'affirmer qu'elles correspondent à des véhicules réellement identiques.
+
+Une perspective d'évolution consisterait à poursuivre cette analyse en retirant progressivement certaines colonnes d'identification, afin d'observer leur influence sur le nombre d'observations similaires et de mieux déterminer si ces répétitions correspondent réellement à des doublons.
+
+Il serait également intéressant d'évaluer l'influence de ces observations sur les performances des modèles, notamment en comparant les résultats obtenus avec différentes stratégies de traitement des doublons.
+
+Cette démarche permettrait de mesurer la robustesse des modèles face à la présence d'observations techniquement similaires et de mieux apprécier leur capacité de généralisation.
 
 # Bibliographie
 
