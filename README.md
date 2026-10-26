@@ -286,12 +286,14 @@ Le résultat est affiché en grammes de CO₂ par kilomètre (g/km).
 
 ## 7. Vérification de la reproductibilité
 
-Un test de reproductibilité a été réalisé sur un poste avec macOS.
+Un test de reproductibilité a été réalisé sur:
+- la machine virtuelle Windows;
+- mac mini 4.
 
 Les vérifications suivantes ont été effectuées avec succès :
 
 - Clonage du dépôt depuis GitHub ;  
-- Création d'un environnement virtuel indépendant avec Python 3.12.3 ;  
+- Création d'un environnement virtuel indépendant avec Python 3.12.10 ;  
 - Installation des dépendances depuis requirements.txt ;  
 - Vérification des dépendances avec pip check ;  
 - Importation des principales bibliothèques Python ;  
@@ -311,7 +313,7 @@ Les performances obtenues après rechargement du modèle XGBoost sont :
 
 
 Ces résultats correspondent à ceux présentés dans le rapport.
-**Périmètre de validation :** ces tests confirment la reconstruction de l'environnement, le fonctionnement du modèle sauvegardé et l'utilisation de l'application. Ils ne constituent pas encore une validation de l'exécution intégrale de tous les notebooks depuis leur première cellule.
+**Périmètre de validation :** ces tests confirment la reconstruction de l'environnement, l'exécution intégrale de tous les notebooks depuis leur première cellule, le fonctionnement du modèle sauvegardé et l'utilisation de l'application Streamlit. 
 
 ## 8. Rapport et documentation
 
