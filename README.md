@@ -192,6 +192,14 @@ Une fois l’environnement activé, le nom (.venv_CO2) apparaît généralement 
 Cliquer sur l’icône **Extensions** dans la barre latérale gauche ( ou appuyer sur `Ctrl + Shift + X`):  
 - Installer l’extension `Python`, publiée par `Microsoft`;  
 - Installer l’extension `Jupyter`.  
+- Installer ipykernel :  
+    ```bash
+    python -m pip install ipykernel
+    ```
+- Installer IpProgress ( barre de progression pour Notebook) :  
+    ```bash
+    python -m pip install ipywidgets
+    ```
   
     
 **3.2.6. Sélection de l’interpréteur Python dans VS Code** 
