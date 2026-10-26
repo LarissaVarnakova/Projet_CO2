@@ -158,7 +158,7 @@ python3.12 -m venv .venv_CO2
 ``` 
 - pour Windows :
 ```bash 
-py 3.12 -m venv .venv_CO2 
+py -3.12 -m venv .venv_CO2 
 ``` 
 - Activer l'environnement virtuel:  
     - sur macOS/Linux :  
