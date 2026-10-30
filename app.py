@@ -1,7 +1,4 @@
 import streamlit as st
-import pandas as pd
-import joblib
-from xgboost import XGBRegressor
 
 
 # ============================================================
@@ -9,382 +6,137 @@ from xgboost import XGBRegressor
 # ============================================================
 
 st.set_page_config(
-    page_title="Prédiction des émissions de CO₂",
+    page_title="Projet CO₂ — Soutenance DataScientest",
     page_icon="🚗",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-
-# ============================================================
-# CHARGEMENT DU MODÈLE ET DU PREPROCESSING
-# ============================================================
-
-@st.cache_resource
-def charger_modele():
-    preprocessing = joblib.load("models/preprocessing_co2.joblib")
-
-    model = XGBRegressor()
-    model.load_model("models/xgboost_co2.json")
-
-    return model, preprocessing
-
-
-model, preprocessing = charger_modele()
-
-# ============================================================
-# CATÉGORIES APPRISES PAR L'ENCODEUR
-# ============================================================
-
-categories = {
-    variable: list(cats)
-    for variable, cats in zip(
-        preprocessing["variables_a_encoder"],
-        preprocessing["encoder"].categories_
-    )
-}
-
-
-# ============================================================
-# LIBELLÉS D'AFFICHAGE
-# ============================================================
-
-def afficher_boite(code):
-    correspondances = {
-        "A": "Automatique",
-        "M": "Manuelle",
-        "D": "Double embrayage",
-        "S": "Séquentielle",
-        "V": "Variation continue"
-    }
-
-    parties = str(code).split()
-
-    if len(parties) == 2:
-        type_boite, rapports = parties
-
-        libelle = correspondances.get(type_boite, type_boite)
-
-        if rapports.isdigit() and rapports != "0":
-            return f"{libelle} – {rapports} rapports"
-
-        return libelle
-
-    return str(code)
 
 # ============================================================
 # EN-TÊTE
 # ============================================================
 
-st.title("🚗 Prédiction des émissions de CO₂")
-
-st.write(
-    "Cette application estime les émissions de CO₂ d'un véhicule "
-    "à partir de ses caractéristiques techniques."
+st.title(
+    "🚗 Prédiction des émissions de CO₂ "
+    "des véhicules commercialisés en France"
 )
 
+st.subheader(
+    "Analyse des données ADEME 2014 et modélisation "
+    "par Machine Learning"
+)
+
+st.write("**Projet Data Scientist — Liora (anciennement DataScientest)**")
+
+st.write("**Réalisé par :** Larissa Varnakova et Aziz Diallo")
+st.write("**Mentor :** Nicolas Mormiche")
+st.write("**Date :** Octobre 2026")
+
+st.divider()
+
+
+# ============================================================
+# PROBLÉMATIQUE
+# ============================================================
+
+st.header("🎯 Notre problématique")
+
 st.info(
-    "Renseignez les caractéristiques du véhicule, puis cliquez sur "
-    "« Prédire les émissions de CO₂ »."
+    "Quels sont les principaux facteurs influençant les émissions "
+    "de CO₂ des véhicules commercialisés en France et comment "
+    "exploiter ces informations pour construire un modèle de "
+    "Machine Learning capable de prédire ces émissions ?"
 )
 
 st.divider()
 
 
 # ============================================================
-# FORMULAIRE
+# OBJECTIFS ET DÉMARCHE
 # ============================================================
 
-with st.form("formulaire_prediction"):
+st.header("🔎 Notre démarche")
 
-    # --------------------------------------------------------
-    # CARACTÉRISTIQUES GÉNÉRALES
-    # --------------------------------------------------------
+col1, col2 = st.columns(2)
 
-    st.subheader("🚘 Caractéristiques générales")
+with col1:
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        lib_mrq = st.selectbox(
-            "Marque",
-            categories["lib_mrq"]
+    with st.container(border=True):
+        st.subheader("📊 Comprendre les données")
+        st.write(
+            "Explorer les caractéristiques techniques et "
+            "environnementales des véhicules."
         )
 
-        hybride = st.selectbox(
-            "Motorisation hybride",
-            categories["hybride"]
+    with st.container(border=True):
+        st.subheader("🧹 Préparer les données")
+        st.write(
+            "Nettoyer les données, traiter les valeurs manquantes "
+            "et préparer les variables pour la modélisation."
         )
 
-        gamme = st.selectbox(
-            "Gamme",
-            categories["gamme"]
+with col2:
+
+    with st.container(border=True):
+        st.subheader("🔍 Identifier les facteurs")
+        st.write(
+            "Analyser les relations entre les caractéristiques "
+            "des véhicules et leurs émissions de CO₂."
         )
 
-    with col2:
-
-        cod_cbr = st.selectbox(
-            "Carburant (code)",
-            categories["cod_cbr"],
-            help="Codification du carburant issue du jeu de données d'origine."
+    with st.container(border=True):
+        st.subheader("🤖 Prédire les émissions")
+        st.write(
+            "Entraîner, comparer et interpréter plusieurs modèles "
+            "de régression."
         )
 
-        Carrosserie = st.selectbox(
-            "Carrosserie",
-            categories["Carrosserie"]
-        )
-
-        typ_boite_nb_rapp = st.selectbox(
-            "Boîte de vitesses",
-            categories["typ_boite_nb_rapp"],
-            format_func=afficher_boite
-        )
+st.divider()
 
 
-    st.divider()
+# ============================================================
+# CHIFFRES CLÉS
+# ============================================================
 
+st.header("📌 Le projet en quelques chiffres")
 
-    # --------------------------------------------------------
-    # CARACTÉRISTIQUES TECHNIQUES
-    # --------------------------------------------------------
+col1, col2, col3 = st.columns(3)
 
-    st.subheader("⚙️ Caractéristiques techniques")
-
-    col3, col4, col5 = st.columns(3)
-
-    with col3:
-
-        puiss_max = st.number_input(
-            "Puissance maximale (kW)",
-            min_value=28.0,
-            max_value=585.0,
-            value=120.0,
-            step=1.0
-        )
-
-    with col4:
-
-        masse_ordma_min = st.number_input(
-            "Masse minimale (kg)",
-            min_value=825.0,
-            max_value=2760.0,
-            value=2076.0,
-            step=1.0
-        )
-
-    with col5:
-
-        masse_ordma_max = st.number_input(
-            "Masse maximale (kg)",
-            min_value=825.0,
-            max_value=3094.0,
-            value=2355.0,
-            step=1.0
-        )
-
-
-    st.divider()
-
-
-    # --------------------------------------------------------
-    # DONNÉES ENVIRONNEMENTALES
-    # --------------------------------------------------------
-
-    st.subheader("🌱 Données environnementales")
-
-    col6, col7 = st.columns(2)
-
-    with col6:
-
-        conso_mixte = st.number_input(
-            "Consommation mixte (L/100 km)",
-            min_value=0.0,
-            max_value=24.5,
-            value=7.8,
-            step=0.1
-        )
-
-        nox = st.number_input(
-            "NOx (g/km)",
-            min_value=0.0,
-            max_value=1.846,
-            value=0.214,
-            step=0.001,
-            format="%.3f"
-        )
-
-    with col7:
-
-        co_typ_1 = st.number_input(
-            "CO – essai type I (g/km)",
-            min_value=0.005,
-            max_value=6.968,
-            value=0.137,
-            step=0.001,
-            format="%.3f"
-        )
-
-        ptcl = st.number_input(
-            "Particules (g/km)",
-            min_value=0.0,
-            max_value=0.023,
-            value=0.001,
-            step=0.001,
-            format="%.3f"
-        )
-
-
-    st.write("")
-
-    bouton_prediction = st.form_submit_button(
-        "🚗 Prédire les émissions de CO₂",
-        type="primary",
-        use_container_width=True
+with col1:
+    st.metric(
+        label="Année des données",
+        value="2014"
     )
 
+with col2:
+    st.metric(
+        label="Observations finales",
+        value="55 003"
+    )
+
+with col3:
+    st.metric(
+        label="Variables après encodage",
+        value="93"
+    )
+
+st.divider()
+
 
 # ============================================================
-# PRÉDICTION
+# PRÉSENTATION DU PARCOURS
 # ============================================================
 
-if bouton_prediction:
+st.header("🧭 Le parcours de notre soutenance")
 
-    # Vérification de cohérence des masses
-    if masse_ordma_min > masse_ordma_max:
+st.write(
+    "À travers les différentes rubriques de cette application, "
+    "nous présenterons notre démarche complète de Data Science : "
+    "de l'exploration des données jusqu'à la prédiction "
+    "interactive des émissions de CO₂."
+)
 
-        st.error(
-            "La masse minimale ne peut pas être supérieure "
-            "à la masse maximale."
-        )
-
-    else:
-
-        # Création de l'observation
-        nouvelle_observation = pd.DataFrame({
-            "puiss_max": [puiss_max],
-            "conso_mixte": [conso_mixte],
-            "co_typ_1": [co_typ_1],
-            "nox": [nox],
-            "ptcl": [ptcl],
-            "masse_ordma_min": [masse_ordma_min],
-            "masse_ordma_max": [masse_ordma_max],
-            "lib_mrq": [lib_mrq],
-            "cod_cbr": [cod_cbr],
-            "hybride": [hybride],
-            "Carrosserie": [Carrosserie],
-            "gamme": [gamme],
-            "typ_boite_nb_rapp": [typ_boite_nb_rapp]
-        })
-
-
-        # ----------------------------------------------------
-        # ENCODAGE
-        # ----------------------------------------------------
-
-        variables_cat = preprocessing["variables_a_encoder"]
-
-        donnees_encodees = preprocessing["encoder"].transform(
-            nouvelle_observation[variables_cat]
-        )
-
-        noms_colonnes_encodees = (
-            preprocessing["encoder"]
-            .get_feature_names_out(variables_cat)
-        )
-
-        df_encode = pd.DataFrame(
-            donnees_encodees,
-            columns=noms_colonnes_encodees
-        )
-
-
-        # ----------------------------------------------------
-        # VARIABLES NUMÉRIQUES
-        # ----------------------------------------------------
-
-        variables_numeriques = [
-            "puiss_max",
-            "conso_mixte",
-            "co_typ_1",
-            "nox",
-            "ptcl",
-            "masse_ordma_min",
-            "masse_ordma_max"
-        ]
-
-        df_numerique = nouvelle_observation[
-            variables_numeriques
-        ].reset_index(drop=True)
-
-
-        # ----------------------------------------------------
-        # ASSEMBLAGE DES 91 VARIABLES
-        # ----------------------------------------------------
-
-        donnees_finales = pd.concat(
-            [df_numerique, df_encode],
-            axis=1
-        )
-
-        donnees_finales = donnees_finales.reindex(
-            columns=preprocessing["colonnes_finales"],
-            fill_value=0
-        )
-
-
-        # ----------------------------------------------------
-        # PRÉDICTION XGBOOST
-        # ----------------------------------------------------
-
-        prediction = float(
-            model.predict(donnees_finales)[0]
-        )
-
-
-        # ----------------------------------------------------
-        # AFFICHAGE DU RÉSULTAT
-        # ----------------------------------------------------
-
-        st.divider()
-
-        st.subheader("📊 Résultat de la prédiction")
-
-        st.metric(
-            label="Émissions de CO₂ estimées",
-            value=f"{prediction:.1f} g/km"
-        )
-
-        st.caption(
-            "Estimation produite par le modèle XGBoost entraîné "
-            "dans le cadre du projet."
-        )
-
-
-
-
-        # ============================================================
-# LIBELLÉS D'AFFICHAGE
-# ============================================================
-
-def afficher_boite(code):
-    correspondances = {
-        "A": "Automatique",
-        "M": "Manuelle",
-        "D": "Double embrayage",
-        "S": "Séquentielle",
-        "V": "Variation continue"
-    }
-
-    parties = str(code).split()
-
-    if len(parties) == 2:
-        type_boite, rapports = parties
-
-        libelle = correspondances.get(type_boite, type_boite)
-
-        if rapports.isdigit() and rapports != "0":
-            return f"{libelle} – {rapports} rapports"
-
-        return libelle
-
-    return str(code)
+st.success(
+    "Utilisez le menu latéral pour naviguer dans notre projet."
+)
