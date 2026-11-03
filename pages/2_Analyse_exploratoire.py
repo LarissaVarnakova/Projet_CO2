@@ -232,73 +232,73 @@ with onglet3:
     st.subheader("3. Tests statistiques")
 
     
-with st.expander("ANOVA — Comparaison des catégories", expanded=True):
+    with st.expander("ANOVA — Comparaison des catégories", expanded=True):
 
-    st.write(
-        "Nous avons réalisé trois analyses de variance (ANOVA) "
-        "pour étudier les différences d'émissions moyennes de CO₂ "
-        "selon le type de carburant, la carrosserie et la gamme commerciale."
-    )
+        st.write(
+            "Nous avons réalisé trois analyses de variance (ANOVA) "
+            "pour étudier les différences d'émissions moyennes de CO₂ "
+            "selon le type de carburant, la carrosserie et la gamme commerciale."
+        )
 
-    st.markdown("#### 1. Émissions de CO₂ selon le carburant")
+        st.markdown("#### 1. Émissions de CO₂ selon le carburant")
 
-    afficher_figure(
-        "anova_carburant.png",
-        "Distribution des émissions de CO₂ par type de carburant. "
-        "Les catégories représentées comportent plus de 30 observations.",
-        largeur=800
-    )
+        afficher_figure(
+            "anova_carburant.png",
+            "Distribution des émissions de CO₂ par type de carburant. "
+            "Les catégories représentées comportent plus de 30 observations.",
+            largeur=800
+        )
 
-    st.write(
-        "L'ANOVA met en évidence des différences statistiquement "
-        "significatives entre les émissions moyennes de CO₂ "
-        "selon le type de carburant. "
-        "Le graphique permet de comparer les distributions "
-        "et la dispersion des émissions entre les catégories."
-    )
+        st.write(
+            "L'ANOVA met en évidence des différences statistiquement "
+            "significatives entre les émissions moyennes de CO₂ "
+            "selon le type de carburant. "
+            "Le graphique permet de comparer les distributions "
+            "et la dispersion des émissions entre les catégories."
+        )
 
-    st.divider()
+        st.divider()
 
-    st.markdown("#### 2. Émissions de CO₂ selon la carrosserie")
+        st.markdown("#### 2. Émissions de CO₂ selon la carrosserie")
 
-    afficher_figure(
-        "anova_carrosserie.png",
-        "Distribution des émissions de CO₂ par type de carrosserie, "
-        "avec les catégories classées selon leurs émissions moyennes.",
-        largeur=900
-    )
+        afficher_figure(
+            "anova_carrosserie.png",
+            "Distribution des émissions de CO₂ par type de carrosserie, "
+            "avec les catégories classées selon leurs émissions moyennes.",
+            largeur=900
+        )
 
-    st.write(
-        "L'ANOVA montre des différences statistiquement significatives "
-        "entre les émissions moyennes de CO₂ selon la carrosserie. "
-        "Le graphique illustre les écarts de distribution "
-        "entre les différentes catégories de véhicules."
-    )
+        st.write(
+            "L'ANOVA montre des différences statistiquement significatives "
+            "entre les émissions moyennes de CO₂ selon la carrosserie. "
+            "Le graphique illustre les écarts de distribution "
+            "entre les différentes catégories de véhicules."
+        )
 
-    st.divider()
+        st.divider()
 
-    st.markdown("#### 3. Émissions de CO₂ selon la gamme commerciale")
+        st.markdown("#### 3. Émissions de CO₂ selon la gamme commerciale")
 
-    afficher_figure(
-        "anova_gamme.png",
-        "Distribution des émissions de CO₂ par gamme commerciale, "
-        "avec les catégories classées selon leurs émissions moyennes.",
-        largeur=800
-    )
+        afficher_figure(
+            "anova_gamme.png",
+            "Distribution des émissions de CO₂ par gamme commerciale, "
+            "avec les catégories classées selon leurs émissions moyennes.",
+            largeur=800
+        )
 
-    st.write(
-        "L'ANOVA met également en évidence des différences "
-        "statistiquement significatives entre les gammes commerciales. "
-        "Les distributions présentées permettent de visualiser "
-        "les écarts entre les différentes gammes de véhicules."
-    )
+        st.write(
+            "L'ANOVA met également en évidence des différences "
+            "statistiquement significatives entre les gammes commerciales. "
+            "Les distributions présentées permettent de visualiser "
+            "les écarts entre les différentes gammes de véhicules."
+        )
 
-    st.info(
-        "Les trois ANOVA indiquent qu'au moins une moyenne de groupe "
-        "diffère des autres pour chacune des variables étudiées. "
-        "Ces résultats ne permettent pas, à eux seuls, d'identifier "
-        "précisément quelles paires de catégories diffèrent."
-    )
+        st.info(
+            "Les trois ANOVA indiquent qu'au moins une moyenne de groupe "
+            "diffère des autres pour chacune des variables étudiées. "
+            "Ces résultats ne permettent pas, à eux seuls, d'identifier "
+            "précisément quelles paires de catégories diffèrent."
+        )
 
     with st.expander("Test de Student — Hybridation", expanded=True):
 
