@@ -562,7 +562,12 @@ with onglet3:
 
         if choix_anova == "Émissions de CO₂ par carburant":
             st.caption("Analyse des catégories comportant plus de 30 observations.")
-
+            st.write(
+            "L'ANOVA met en évidence des différences statistiquement "
+            "significatives entre les émissions moyennes de CO₂ "
+            "selon le type de carburant. ")
+            st.write("Les metriques obtenues montrent qu'ils existe des differences significatives " \
+                    "entre au moins deux categories de carburant.")
             carburants = {
                 'ES': 'Essence',
                 'GO': 'Diesel',
@@ -849,17 +854,16 @@ with onglet4:
         with st.container(border=True):
             st.markdown("### 03 · Caractéristiques techniques")
             st.write(
-                "La masse et les caractéristiques de puissance présentent "
-                "également des relations avec les niveaux d'émissions."
+                "La masse et certaines caractéristiques des véhicules "
+                "sont associées aux niveaux d'émissions."
             )
 
     with col2:
         with st.container(border=True):
             st.markdown("### 02 · Consommation de carburant")
             st.write(
-                "Les consommations sont fortement associées aux émissions "
-                "de CO₂. La consommation mixte présente notamment une "
-                "forte corrélation avec la cible."
+                "La consommation mixte est fortement associée aux émissions "
+                "de CO₂ et constitue une variable importante pour la prédiction. "
             )
 
         with st.container(border=True):
